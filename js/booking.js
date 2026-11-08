@@ -125,6 +125,7 @@ const FUSO = "America/Sao_Paulo";
     const menor = anos !== null && anos >= 0 && anos < 18;
     responsaveis.hidden = !menor;
     resp1.required = menor;
+    $(".note-5anos").hidden = !(menor && anos < 5);
   });
 
   // Limpa o destaque de erro assim que o campo é corrigido
