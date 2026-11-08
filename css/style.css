@@ -346,3 +346,5 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .event-cartaz img { width: 100%; height: auto; display: block; }
 .event { align-items: start; }
 .event time, .event .badge { margin-top: 4px; }
+.clube { margin-bottom: 24px; border-left: 4px solid var(--gold); }
+.clube p { max-width: 70ch; }
