@@ -28,7 +28,7 @@ const CONFIG = {
 
   DIAS_SEMANA: [2, 3, 4, 5],       // 0=dom, 1=seg, 2=ter, 3=qua, 4=qui, 5=sex, 6=sáb
   INICIO: '08:00',                 // primeiro horário do dia
-  FIM: '18:00',                    // a consulta precisa terminar até este horário
+  FIM: '19:00',                    // a consulta precisa terminar até este horário
   DURACAO_MIN: 50,                 // duração da consulta (minutos)
   INTERVALO_MIN: 60,               // horários começam de hora em hora (10 min de intervalo)
 
@@ -36,7 +36,7 @@ const CONFIG = {
   ANTECEDENCIA_MAX_DIAS: 30,       // até quantos dias à frente aparece
 
   TITULO_EVENTO: 'Consulta (site)',   // sem nome de paciente no Google Agenda (regra do consultório)
-  ENDERECO: 'Av. Luiz Manoel Gonzaga, 351, Sala 703 – Três Figueiras, Porto Alegre – RS',
+  ENDERECO: 'Edifício Rui Barbosa – Av. Luiz Manoel Gonzaga, 351, Sala 703 – Três Figueiras, Porto Alegre – RS',
   WHATSAPP: '(51) 99555-2044',
   NOME_PROFISSIONAL: 'Mateus Flores – Fonoaudiólogo',
   ENVIAR_EMAIL_PACIENTE: true,
