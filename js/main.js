@@ -57,3 +57,14 @@ function showTab(scroll = true) {
 }
 window.addEventListener("hashchange", () => showTab());
 showTab(false);
+
+// Mentoria: depois da data de encerramento, a turma aparece como concluída
+(() => {
+  const texto = document.querySelector("[data-turma-texto]");
+  if (!texto) return;
+  const [a, m, d] = texto.dataset.encerra.split("-").map(Number);
+  if (new Date() <= new Date(a, m - 1, d, 23, 59)) return;
+  const tag = document.querySelector("[data-turma-tag]");
+  if (tag) tag.textContent = "4ª turma concluída";
+  texto.innerHTML = "<strong>A 4ª turma foi concluída.</strong> Você pode adquirir o curso gravado e estudar no seu ritmo.";
+})();
