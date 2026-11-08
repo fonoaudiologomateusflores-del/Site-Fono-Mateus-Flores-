@@ -193,7 +193,7 @@ p { margin: 0 0 1em; }
 
 /* ===== Abas ===== */
 main { min-height: calc(100vh - 72px - 180px); }
-[data-tab][hidden] { display: none !important; }
+[hidden], [data-tab][hidden] { display: none !important; }
 [data-tab]:not([hidden]) { animation: tabIn .35s ease; }
 @keyframes tabIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { [data-tab]:not([hidden]) { animation: none; } }
@@ -221,3 +221,44 @@ main { min-height: calc(100vh - 72px - 180px); }
 .cards-4 { grid-template-columns: repeat(4, 1fr); }
 @media (max-width: 1080px) { .cards-4 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .cards-4 { grid-template-columns: 1fr; } }
+
+/* ===== Agendamento on-line ===== */
+.booking-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 48px; align-items: start; }
+.booking-facts { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 10px; }
+.booking-facts li { padding-left: 14px; border-left: 2px solid #f0b48f; }
+.booking-facts strong { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: #f0b48f; }
+.small-light { font-size: .92rem; color: #b8cbc7; }
+.section-dark a:not(.btn) { color: #f0b48f; }
+.step { border: 0; padding: 0; margin: 0 0 8px; display: grid; gap: 16px; min-width: 0; }
+.step legend { font-family: var(--serif); font-size: 1.2rem; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; padding: 0; }
+.step-num { width: 28px; height: 28px; border-radius: 50%; background: #f0b48f; color: var(--dark); font-family: var(--sans); font-size: .9rem; font-weight: 600; display: grid; place-items: center; }
+.slots-status { color: #cfdcd9; font-size: .95rem; }
+.days, .times { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+.times { flex-wrap: wrap; overflow: visible; }
+.chip { flex: none; font: inherit; font-size: .92rem; font-weight: 500; color: #e7efed; background: rgb(255 255 255 / .06); border: 1.5px solid rgb(255 255 255 / .18); border-radius: 12px; padding: 8px 14px; cursor: pointer; text-align: center; transition: background .15s, border-color .15s; }
+.chip span { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: #9fb7b2; }
+.chip:hover { border-color: #f0b48f; }
+.chip[aria-checked="true"] { background: #f0b48f; border-color: #f0b48f; color: var(--dark); }
+.chip[aria-checked="true"] span { color: var(--dark); }
+.chip-time { min-width: 76px; }
+.chip:focus-visible, .check input:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.responsaveis { display: grid; gap: 16px; padding: 16px; border-radius: 12px; background: rgb(240 180 143 / .08); border: 1px solid rgb(240 180 143 / .3); }
+.note { margin: 0; color: #f0b48f; font-size: .9rem; font-weight: 500; }
+.check { display: flex; gap: 12px; align-items: flex-start; font-size: .9rem; color: #cfdcd9; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: #f0b48f; }
+.check input[aria-invalid="true"] { outline: 2px solid #ff8a80; outline-offset: 2px; }
+.field textarea[aria-invalid="true"], .field select[aria-invalid="true"] { border-color: #ff8a80; }
+.privacy { font-size: .85rem; color: #9fb7b2; }
+.privacy summary { cursor: pointer; color: #cfdcd9; }
+.privacy p { margin: 8px 0 0; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.btn:disabled { opacity: .6; cursor: wait; transform: none; }
+.booking-done { grid-column: 2; background: rgb(255 255 255 / .05); border: 1px solid rgb(255 255 255 / .12); border-radius: var(--radius); padding: 40px 28px; text-align: center; outline: none; }
+.booking-done h3 { color: #fff; font-size: 1.6rem; }
+.done-icon { width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%; background: #f0b48f; color: var(--dark); display: grid; place-items: center; font-size: 1.6rem; font-weight: 700; }
+.done-when { font-size: 1.1rem; color: #fff; font-weight: 500; }
+@media (max-width: 860px) {
+  .booking-layout { grid-template-columns: 1fr; gap: 32px; }
+  .booking-done { grid-column: auto; }
+}
+main:has(#agendamento:not([hidden])) { background: var(--dark); }

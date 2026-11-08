@@ -173,67 +173,101 @@
 
   <!-- AGENDAMENTO -->
   <section id="agendamento" data-tab class="section section-dark">
-    <div class="container two-col">
-      <div>
+    <div class="container booking-layout">
+      <div class="booking-intro">
         <p class="eyebrow">Agendamento de consulta</p>
-        <h2>Vamos marcar sua avaliação?</h2>
-        <p>Preencha o formulário e você será direcionado ao WhatsApp com a mensagem pronta. Retorno em até um dia útil para confirmar data e horário.</p>
-        <ol class="steps">
-          <li>Envie seus dados pelo formulário</li>
-          <li>Confirmamos o melhor horário</li>
-          <li>Primeira consulta: avaliação completa</li>
-        </ol>
+        <h2>Agende sua consulta on‑line</h2>
+        <p>Escolha um dos horários disponíveis e preencha os dados do paciente. A confirmação chega no seu e-mail.</p>
+        <ul class="booking-facts">
+          <li><strong>Duração</strong> 50 minutos</li>
+          <li><strong>Atendimento</strong> terça a sexta, das 8h às 18h</li>
+          <li><strong>Antecedência</strong> mínimo de 48h, até 30 dias</li>
+        </ul>
+        <p class="small-light">Prefere conversar antes? <a href="https://wa.me/5551995552044" target="_blank" rel="noopener">Fale pelo WhatsApp</a>.</p>
       </div>
+
       <form id="booking" class="form" novalidate>
-        <div class="field">
-          <label for="nome">Nome completo</label>
-          <input id="nome" name="nome" type="text" autocomplete="name" required>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="telefone">Telefone / WhatsApp</label>
-            <input id="telefone" name="telefone" type="tel" autocomplete="tel" required>
-          </div>
-          <div class="field">
-            <label for="idade">Idade do paciente</label>
-            <input id="idade" name="idade" type="text" inputmode="numeric">
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="area">Área de interesse</label>
-            <select id="area" name="area">
-              <option>Linguagem</option>
-              <option>Fluência</option>
-              <option>Gagueira</option>
-              <option>Fala</option>
-              <option>Supervisão clínica</option>
-              <option>Não sei / outra</option>
+        <!-- Passo 1: horário -->
+        <fieldset class="step" id="step-horario">
+          <legend><span class="step-num">1</span> Escolha o horário</legend>
+          <div class="slots-status" role="status">Carregando horários disponíveis…</div>
+          <div class="days" role="radiogroup" aria-label="Dia" hidden></div>
+          <div class="times" role="radiogroup" aria-label="Horário" hidden></div>
+          <div class="field" id="periodo-field" hidden>
+            <label for="periodo">Melhor período</label>
+            <select id="periodo" name="periodo">
+              <option>Manhã</option>
+              <option>Tarde</option>
             </select>
           </div>
+        </fieldset>
+
+        <!-- Passo 2: dados -->
+        <fieldset class="step">
+          <legend><span class="step-num">2</span> Dados do paciente</legend>
           <div class="field">
-            <label for="modalidade">Modalidade</label>
-            <select id="modalidade" name="modalidade">
-              <option>Presencial</option>
-              <option>On-line</option>
-            </select>
+            <label for="nome">Nome completo do paciente *</label>
+            <input id="nome" name="nome" type="text" autocomplete="name" required maxlength="120">
           </div>
-        </div>
-        <div class="field">
-          <label for="periodo">Melhor período</label>
-          <select id="periodo" name="periodo">
-            <option>Manhã</option>
-            <option>Tarde</option>
-            <option>Noite</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="mensagem">Conte brevemente o motivo da consulta</label>
-          <textarea id="mensagem" name="mensagem" rows="3"></textarea>
-        </div>
-        <p class="form-error" role="alert" hidden>Preencha nome e telefone para continuar.</p>
-        <button type="submit" class="btn btn-light">Enviar pelo WhatsApp</button>
+          <div class="field-row">
+            <div class="field">
+              <label for="nascimento">Data de nascimento *</label>
+              <input id="nascimento" name="nascimento" type="date" required>
+            </div>
+            <div class="field">
+              <label for="modalidade">Modalidade</label>
+              <select id="modalidade" name="modalidade">
+                <option>Presencial</option>
+                <option>On-line</option>
+              </select>
+            </div>
+          </div>
+          <div class="responsaveis" hidden>
+            <p class="note">Paciente menor de 18 anos: informe os responsáveis.</p>
+            <div class="field">
+              <label for="responsavel1">Nome completo do responsável *</label>
+              <input id="responsavel1" name="responsavel1" type="text" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="responsavel2">Nome completo do 2º responsável (opcional)</label>
+              <input id="responsavel2" name="responsavel2" type="text" maxlength="120">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="telefone">Telefone / WhatsApp *</label>
+              <input id="telefone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="(51) 90000-0000">
+            </div>
+            <div class="field">
+              <label for="email">E-mail *</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="queixa">Queixa principal *</label>
+            <textarea id="queixa" name="queixa" rows="3" required maxlength="1500" placeholder="Conte brevemente o motivo da consulta"></textarea>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="consentimento" id="consentimento" required>
+            <span>Autorizo o uso dos dados informados para fins de agendamento e atendimento fonoaudiológico, conforme a LGPD. *</span>
+          </label>
+          <details class="privacy">
+            <summary>Como seus dados são tratados</summary>
+            <p>Os dados enviados são usados apenas para organizar o agendamento e o atendimento. Eles ficam armazenados na conta Google do consultório, com acesso restrito ao profissional, e não são compartilhados com terceiros. Para corrigir ou excluir seus dados, entre em contato pelo e-mail fonoaudiologo.mateusflores@gmail.com.</p>
+          </details>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        </fieldset>
+
+        <p class="form-error" role="alert" hidden></p>
+        <button type="submit" class="btn btn-light">Confirmar agendamento</button>
       </form>
+
+      <div class="booking-done" hidden tabindex="-1">
+        <div class="done-icon" aria-hidden="true">✓</div>
+        <h3>Consulta agendada!</h3>
+        <p class="done-when"></p>
+        <p>Enviamos a confirmação para o seu e-mail. Se precisar remarcar, é só chamar no <a href="https://wa.me/5551995552044" target="_blank" rel="noopener">WhatsApp</a>.</p>
+      </div>
     </div>
   </section>
 
@@ -251,21 +285,21 @@
           <h3>Gagueira na infância: avaliação e intervenção</h3>
           <p>Como diferenciar disfluências comuns da gagueira, conduzir a avaliação e orientar a família.</p>
           <dl><div><dt>Carga horária</dt><dd>12h</dd></div><div><dt>Formato</dt><dd>Gravado + encontro ao vivo</dd></div></dl>
-          <a href="#agendamento" class="link-arrow" data-interest="Curso: Gagueira na infância">Quero me inscrever</a>
+          <a href="https://wa.me/5551995552044?text=Ol%C3%A1%2C%20Mateus%21%20Tenho%20interesse%20em%3A%20curso%20Gagueira%20na%20inf%C3%A2ncia." target="_blank" rel="noopener" class="link-arrow">Quero me inscrever</a>
         </article>
         <article class="course">
           <span class="tag">Curso presencial</span>
           <h3>Fluência em adolescentes e adultos</h3>
           <p>Estratégias terapêuticas, aspectos emocionais da gagueira e planejamento de casos na prática clínica.</p>
           <dl><div><dt>Carga horária</dt><dd>8h</dd></div><div><dt>Formato</dt><dd>Presencial, turma reduzida</dd></div></dl>
-          <a href="#agendamento" class="link-arrow" data-interest="Curso: Fluência em adolescentes e adultos">Quero me inscrever</a>
+          <a href="https://wa.me/5551995552044?text=Ol%C3%A1%2C%20Mateus%21%20Tenho%20interesse%20em%3A%20curso%20Flu%C3%AAncia%20em%20adolescentes%20e%20adultos." target="_blank" rel="noopener" class="link-arrow">Quero me inscrever</a>
         </article>
         <article class="course course-featured">
           <span class="tag">Supervisão</span>
           <h3>Supervisão clínica individual e em grupo</h3>
           <p>Discussão de casos, planejamento terapêutico e acompanhamento contínuo para fonoaudiólogos em todas as fases da carreira.</p>
           <dl><div><dt>Frequência</dt><dd>Quinzenal ou mensal</dd></div><div><dt>Formato</dt><dd>On-line</dd></div></dl>
-          <a href="#agendamento" class="link-arrow" data-interest="Supervisão clínica">Solicitar supervisão</a>
+          <a href="https://wa.me/5551995552044?text=Ol%C3%A1%2C%20Mateus%21%20Tenho%20interesse%20em%3A%20Supervis%C3%A3o%20cl%C3%ADnica." target="_blank" rel="noopener" class="link-arrow">Solicitar supervisão</a>
         </article>
       </div>
     </div>
@@ -377,5 +411,6 @@
 </a>
 
 <script src="js/main.js"></script>
+<script src="js/booking.js"></script>
 </body>
 </html>

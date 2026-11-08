@@ -1,7 +1,3 @@
-// ===== CONFIGURAÇÃO =====
-// Número do WhatsApp com DDI + DDD, apenas dígitos. Ex.: 5551999998888
-const WHATSAPP_NUMBER = "5551995552044";
-
 // Menu mobile
 const toggle = document.querySelector(".nav-toggle");
 const nav = document.getElementById("menu");
@@ -25,50 +21,6 @@ onScroll();
 
 // Ano no rodapé
 document.getElementById("year").textContent = new Date().getFullYear();
-
-// Links de cursos pré-selecionam o interesse no formulário
-const areaSelect = document.getElementById("area");
-document.querySelectorAll("[data-interest]").forEach((link) =>
-  link.addEventListener("click", () => {
-    const value = link.dataset.interest;
-    if (![...areaSelect.options].some((o) => o.value === value)) {
-      areaSelect.add(new Option(value, value));
-    }
-    areaSelect.value = value;
-  })
-);
-
-// Formulário de agendamento -> WhatsApp
-const form = document.getElementById("booking");
-const errorMsg = form.querySelector(".form-error");
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(form));
-  const required = ["nome", "telefone"];
-  let valid = true;
-  required.forEach((name) => {
-    const field = form.elements[name];
-    const empty = !field.value.trim();
-    field.setAttribute("aria-invalid", empty);
-    if (empty) valid = false;
-  });
-  errorMsg.hidden = valid;
-  if (!valid) return;
-
-  const lines = [
-    "Olá, Mateus! Gostaria de agendar uma consulta.",
-    `Nome: ${data.nome}`,
-    `Telefone: ${data.telefone}`,
-    data.idade && `Idade do paciente: ${data.idade}`,
-    `Área: ${data.area}`,
-    `Modalidade: ${data.modalidade}`,
-    `Melhor período: ${data.periodo}`,
-    data.mensagem && `Motivo: ${data.mensagem}`,
-  ].filter(Boolean);
-
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
-  window.open(url, "_blank", "noopener");
-});
 
 // Animação suave ao aparecer
 let io = null;

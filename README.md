@@ -8,7 +8,8 @@ Cursos e supervisões, Eventos e notícias e Artigos.
 
 | O quê | Onde |
 |---|---|
-| Número do WhatsApp (agendamento) | `js/main.js` → `WHATSAPP_NUMBER` (ex.: `5551999998888`) |
+| Número do WhatsApp | `js/booking.js` → `WHATSAPP_NUMBER` |
+| Link da agenda on-line | `js/booking.js` → `AGENDAMENTO_URL` |
 | CRFa, formação, textos | `index.html` (procure por `0-00000` e `Instituição`) |
 | Endereço e mapa | `index.html`, seção `#local` (texto, link do Maps e `iframe`) |
 | Telefone, e-mail, redes sociais | `index.html`, seção `#local` e rodapé |
@@ -26,8 +27,10 @@ e um link `<a href="#nova">` no menu.
 
 ## Agendamento
 
-O formulário monta uma mensagem com os dados do paciente e abre o WhatsApp
-com o texto pronto — não é preciso servidor.
+O paciente escolhe um horário livre da agenda Google e preenche os dados
+(responsáveis aparecem só para menores de 18 anos). Para ativar, siga
+[AGENDAMENTO-ONLINE.md](AGENDAMENTO-ONLINE.md). Enquanto não estiver ativado,
+o formulário envia os dados pelo WhatsApp.
 
 ## Publicar no GitHub Pages
 
