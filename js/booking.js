@@ -1,7 +1,7 @@
 // ===== AGENDAMENTO ON-LINE =====
 // Cole aqui o endereço do app da Web do Google Apps Script (termina em /exec).
 // Enquanto estiver vazio, o formulário envia os dados pelo WhatsApp.
-const AGENDAMENTO_URL = "";
+const AGENDAMENTO_URL = "https://script.google.com/macros/s/AKfycbwASvNKoh-Wdl116KyEa25miemQ_SKT03qI--KaRy8pQsMg3rvGdPpSoYoXw_FPfpxCaw/exec";
 const WHATSAPP_NUMBER = "5551995552044";
 const FUSO = "America/Sao_Paulo";
 
