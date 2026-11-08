@@ -21,6 +21,8 @@ const FUSO = "America/Sao_Paulo";
 
   let modoOnline = Boolean(AGENDAMENTO_URL);
   let horarioEscolhido = null;
+  let carregadoEm = 0;
+  const VALIDADE_MS = 3 * 60 * 1000; // recarrega a lista se tiver mais de 3 minutos
 
   const fmtDia = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, weekday: "short", day: "2-digit", month: "2-digit" });
   const fmtChave = new Intl.DateTimeFormat("en-CA", { timeZone: FUSO, year: "numeric", month: "2-digit", day: "2-digit" });
@@ -49,6 +51,7 @@ const FUSO = "America/Sao_Paulo";
       const r = await fetch(AGENDAMENTO_URL + "?action=horarios", { cache: "no-store" });
       const data = await r.json();
       if (!data.ok) throw new Error(data.erro);
+      carregadoEm = Date.now();
       montarDias(data.horarios.map((h) => new Date(h)));
     } catch (err) {
       console.error(err);
@@ -234,6 +237,13 @@ const FUSO = "America/Sao_Paulo";
       if (modoOnline) submitBtn.textContent = "Confirmar agendamento";
     }
   });
+
+  // Mantém a lista em dia: ao voltar para a aba Agendamento ou para a janela
+  const atualizarSeAntigo = () => {
+    if (modoOnline && !form.hidden && location.hash === "#agendamento" && Date.now() - carregadoEm > VALIDADE_MS) carregarHorarios();
+  };
+  window.addEventListener("hashchange", atualizarSeAntigo);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) atualizarSeAntigo(); });
 
   if (modoOnline) carregarHorarios();
   else ativarModoWhatsApp("A agenda on-line estará disponível em breve. Envie seus dados e confirmamos o horário pelo WhatsApp.");

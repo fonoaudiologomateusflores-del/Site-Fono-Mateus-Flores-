@@ -39,10 +39,17 @@ conta **fonoaudiologo.mateusflores@gmail.com**, de preferência no computador.
 
 ## Como funciona
 
-- O site mostra os horários livres de **terça a sexta, das 8h às 18h**, com
-  consultas de **50 minutos** começando de hora em hora, de **48h a 30 dias** à
-  frente. Horários ocupados na sua agenda e feriados nacionais não aparecem.
-  Eventos marcados como "Disponível" (livre) não bloqueiam horário.
+- **Só aparecem os horários que você marcou como "Disponível"** na sua agenda
+  (o mesmo nome dos eventos que a sua planilha já cria). Dentro de cada bloco
+  "Disponível", o site oferece consultas de **50 minutos** começando de hora em
+  hora, com **48h a 30 dias** de antecedência.
+- A disponibilidade é conferida **na hora**: a lista é buscada quando o paciente
+  abre o agendamento (e de novo se ele voltar depois de alguns minutos), e o
+  horário é checado outra vez no momento da confirmação. Assim que uma consulta
+  é marcada, ou se você criar qualquer compromisso "Ocupado" por cima, aquele
+  horário some do site.
+- Feriados nacionais são bloqueados automaticamente, mesmo que haja um bloco
+  "Disponível" no dia.
 - O paciente informa: nome completo, data de nascimento, responsáveis (só se for
   menor de 18 anos), telefone, e-mail, modalidade, queixa principal e o
   consentimento da LGPD.
@@ -58,7 +65,8 @@ conta **fonoaudiologo.mateusflores@gmail.com**, de preferência no computador.
 ## Ajustes
 
 Todas as regras ficam no início do `Code.gs`, no bloco `CONFIG` (dias,
-horários, duração, antecedência, endereço, e-mails). Depois de alterar:
+horários, duração, antecedência, endereço, e-mails). Para voltar a oferecer
+qualquer horário vago entre 8h e 18h, mude `SOMENTE_DISPONIVEL` para `false`. Depois de alterar:
 **Implantar → Gerenciar implantações → ✏ Editar → Versão: Nova versão →
 Implantar**. O link continua o mesmo.
 

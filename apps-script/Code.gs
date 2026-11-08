@@ -16,6 +16,11 @@ const CONFIG = {
   AGENDAS_OCUPADAS: ['primary'],   // agendas consultadas para saber o que está ocupado
   AGENDA_FERIADOS: 'pt.brazilian#holiday@group.v.calendar.google.com', // '' para não bloquear feriados
 
+  // Só oferece horários dentro dos eventos "Disponível" da agenda.
+  // (false = qualquer horário vago dentro de DIAS_SEMANA/INICIO/FIM)
+  SOMENTE_DISPONIVEL: true,
+  TITULO_DISPONIVEL: 'Disponível',
+
   DIAS_SEMANA: [2, 3, 4, 5],       // 0=dom, 1=seg, 2=ter, 3=qua, 4=qui, 5=sex, 6=sáb
   INICIO: '08:00',                 // primeiro horário do dia
   FIM: '18:00',                    // a consulta precisa terminar até este horário
@@ -128,33 +133,56 @@ function horariosLivres_() {
       feriados[Utilities.formatDate(ev.getStartTime(), FUSO, 'yyyy-MM-dd')] = true;
     });
   }
-  return calcularHorarios(ocupados, agora, CONFIG, feriados);
+  let janelas = null;
+  if (CONFIG.SOMENTE_DISPONIVEL) {
+    const alvo = normalizar_(CONFIG.TITULO_DISPONIVEL);
+    const cal = CONFIG.AGENDA === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(CONFIG.AGENDA);
+    janelas = cal.getEvents(agora, limite)
+      .filter((ev) => normalizar_(ev.getTitle()) === alvo)
+      .map((ev) => [ev.getStartTime().getTime(), ev.getEndTime().getTime()]);
+  }
+  return calcularHorarios(ocupados, agora, CONFIG, feriados, janelas);
+}
+
+function normalizar_(t) {
+  return String(t || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 /**
  * Função pura (testável): devolve os inícios de consulta livres.
  * ocupados: [[inicioMs, fimMs], ...]; feriados: {'yyyy-MM-dd': true}
- * Usa o fuso do script (America/Sao_Paulo) para montar as datas.
+ * janelas: [[inicioMs, fimMs], ...] dos eventos "Disponível" (ou null para
+ * usar DIAS_SEMANA/INICIO/FIM). Usa o fuso do script (America/Sao_Paulo).
  */
-function calcularHorarios(ocupados, agora, cfg, feriados) {
+function calcularHorarios(ocupados, agora, cfg, feriados, janelas) {
   const [hi, mi] = cfg.INICIO.split(':').map(Number);
   const [hf, mf] = cfg.FIM.split(':').map(Number);
   const minimo = agora.getTime() + cfg.ANTECEDENCIA_MIN_HORAS * 3600000;
   const maximo = agora.getTime() + cfg.ANTECEDENCIA_MAX_DIAS * 86400000;
   const dur = cfg.DURACAO_MIN * 60000;
   const out = [];
+  const chaveDia = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const livre = (t) => t >= minimo && t <= maximo && !ocupados.some((o) => t < o[1] && t + dur > o[0]);
+
+  if (janelas) {
+    const vistos = {};
+    janelas.slice().sort((a, b) => a[0] - b[0]).forEach((j) => {
+      for (let t = j[0]; t + dur <= j[1]; t += cfg.INTERVALO_MIN * 60000) {
+        if (vistos[t] || (feriados && feriados[chaveDia(new Date(t))])) continue;
+        if (livre(t)) { vistos[t] = true; out.push(new Date(t)); }
+      }
+    });
+    return out;
+  }
 
   for (let i = 0; i <= cfg.ANTECEDENCIA_MAX_DIAS + 1; i++) {
     const dia = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() + i);
     if (cfg.DIAS_SEMANA.indexOf(dia.getDay()) === -1) continue;
-    const chave = dia.getFullYear() + '-' + String(dia.getMonth() + 1).padStart(2, '0') + '-' + String(dia.getDate()).padStart(2, '0');
-    if (feriados && feriados[chave]) continue;
+    if (feriados && feriados[chaveDia(dia)]) continue;
 
     const fimDia = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate(), hf, mf).getTime();
     for (let t = new Date(dia.getFullYear(), dia.getMonth(), dia.getDate(), hi, mi).getTime(); t + dur <= fimDia; t += cfg.INTERVALO_MIN * 60000) {
-      if (t < minimo || t > maximo) continue;
-      const conflito = ocupados.some((o) => t < o[1] && t + dur > o[0]);
-      if (!conflito) out.push(new Date(t));
+      if (livre(t)) out.push(new Date(t));
     }
   }
   return out;
