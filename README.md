@@ -12,7 +12,8 @@ Cursos e supervisões, Eventos e notícias e Artigos.
 | CRFa, formação, textos | `index.html` (procure por `0-00000` e `Instituição`) |
 | Endereço e mapa | `index.html`, seção `#local` (texto, link do Maps e `iframe`) |
 | Telefone, e-mail, redes sociais | `index.html`, seção `#local` e rodapé |
-| Foto | Salve em `assets/` e troque o `src` da imagem no topo |
+| Foto de perfil | `assets/mateus-flores.jpg` (e a versão menor `mateus-flores-600.jpg`) |
+| Fotos do consultório | Salve em `assets/` e troque cada `<div class="photo-slot">` da aba Atendimento por `<img src="assets/consultorio-1.jpg" alt="…">` |
 | Cursos, eventos e artigos | `index.html`, seções `#cursos`, `#eventos`, `#artigos` (copie um bloco para adicionar outro) |
 | Cores | `css/style.css`, variáveis em `:root` |
 

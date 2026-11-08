@@ -1,6 +1,6 @@
 // ===== CONFIGURAÇÃO =====
 // Número do WhatsApp com DDI + DDD, apenas dígitos. Ex.: 5551999998888
-const WHATSAPP_NUMBER = "5500000000000";
+const WHATSAPP_NUMBER = "5551995552044";
 
 // Menu mobile
 const toggle = document.querySelector(".nav-toggle");
