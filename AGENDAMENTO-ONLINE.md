@@ -39,15 +39,16 @@ conta **fonoaudiologo.mateusflores@gmail.com**, de preferência no computador.
 
 ## Como funciona
 
-- **Só aparecem os horários que você marcou como "Disponível"** na sua agenda
-  (o mesmo nome dos eventos que a sua planilha já cria). Dentro de cada bloco
-  "Disponível", o site oferece consultas de **50 minutos** começando de hora em
-  hora, com **48h a 30 dias** de antecedência.
-- A disponibilidade é conferida **na hora**: a lista é buscada quando o paciente
-  abre o agendamento (e de novo se ele voltar depois de alguns minutos), e o
-  horário é checado outra vez no momento da confirmação. Assim que uma consulta
-  é marcada, ou se você criar qualquer compromisso "Ocupado" por cima, aquele
-  horário some do site.
+- **A planilha "Agenda Fgo. Mateus Flores 2026" é quem manda.** O site oferece
+  só as células escritas **"Livre"** nas abas semanais ("09/11 a 14/11"...), de
+  terça a sexta, com consultas de **50 minutos** e de **48h a 30 dias** de
+  antecedência. Compromissos no Google Agenda que não vêm da planilha (como as
+  próprias consultas agendadas pelo site) também bloqueiam o horário.
+- Ao confirmar, o script escreve o **nome do paciente** na célula (preto, sem
+  negrito/itálico, com uma nota "Agendado pelo site…") e cria o evento no Google
+  Agenda. O horário some do site na hora.
+- Para abrir novas semanas, basta criar a aba da semana no mesmo formato e
+  escrever "Livre" nos horários vagos.
 - Feriados nacionais são bloqueados automaticamente, mesmo que haja um bloco
   "Disponível" no dia.
 - O paciente informa: nome completo, data de nascimento, responsáveis (só se for
@@ -65,8 +66,8 @@ conta **fonoaudiologo.mateusflores@gmail.com**, de preferência no computador.
 ## Ajustes
 
 Todas as regras ficam no início do `Code.gs`, no bloco `CONFIG` (dias,
-horários, duração, antecedência, endereço, e-mails). Para voltar a oferecer
-qualquer horário vago entre 8h e 18h, mude `SOMENTE_DISPONIVEL` para `false`. Depois de alterar:
+horários, duração, antecedência, endereço, e-mails). Para usar os eventos
+"Disponível" do Google Agenda em vez da planilha, mude `FONTE` para `'agenda'`. Depois de alterar:
 **Implantar → Gerenciar implantações → ✏ Editar → Versão: Nova versão →
 Implantar**. O link continua o mesmo.
 

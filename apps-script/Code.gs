@@ -16,10 +16,15 @@ const CONFIG = {
   AGENDAS_OCUPADAS: ['primary'],   // agendas consultadas para saber o que está ocupado
   AGENDA_FERIADOS: 'pt.brazilian#holiday@group.v.calendar.google.com', // '' para não bloquear feriados
 
-  // Só oferece horários dentro dos eventos "Disponível" da agenda.
-  // (false = qualquer horário vago dentro de DIAS_SEMANA/INICIO/FIM)
-  SOMENTE_DISPONIVEL: true,
+  // De onde vêm os horários oferecidos:
+  //  'planilha' = células "Livre" da planilha de agenda (recomendado)
+  //  'agenda'   = eventos "Disponível" do Google Agenda
+  FONTE: 'planilha',
+  PLANILHA_AGENDA_ID: '1xxyg5GCcXKRZyklTPi5xu2twFLvWoituPSm58Ba-TLw', // Agenda Fgo. Mateus Flores 2026
+  TEXTO_LIVRE: 'Livre',
+  MARCA_SINCRONIZADOS: 'sincronizado da planilha de agenda', // eventos que só espelham a planilha
   TITULO_DISPONIVEL: 'Disponível',
+  SOMENTE_DISPONIVEL: true,        // (FONTE 'agenda') false = qualquer horário vago em DIAS_SEMANA/INICIO/FIM
 
   DIAS_SEMANA: [2, 3, 4, 5],       // 0=dom, 1=seg, 2=ter, 3=qua, 4=qui, 5=sex, 6=sáb
   INICIO: '08:00',                 // primeiro horário do dia
@@ -93,6 +98,7 @@ function doPost(e) {
     lock.waitLock(20000);
     const livres = horariosLivres_().map((d) => d.getTime());
     if (livres.indexOf(p.inicio.getTime()) === -1) return json_({ ok: false, erro: 'horario_ocupado' });
+    if (CONFIG.FONTE === 'planilha' && !marcarNaPlanilhaAgenda_(p)) return json_({ ok: false, erro: 'horario_ocupado' });
 
     const fim = new Date(p.inicio.getTime() + CONFIG.DURACAO_MIN * 60000);
     const evento = (CONFIG.AGENDA === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(CONFIG.AGENDA))
@@ -141,6 +147,7 @@ function horariosLivres_() {
   const agora = new Date();
   const limite = new Date(agora.getTime() + (CONFIG.ANTECEDENCIA_MAX_DIAS + 1) * 86400000);
   const alvo = normalizar_(CONFIG.TITULO_DISPONIVEL);
+  CELULAS_LIVRES = [];
 
   // 1. Eventos das agendas: blocos "Disponível" viram janelas; o resto ocupa horário
   const ocupados = [];
@@ -155,12 +162,23 @@ function horariosLivres_() {
       if (ev.isAllDayEvent()) return;
       const intervalo = [ev.getStartTime().getTime(), ev.getEndTime().getTime()];
       if (normalizar_(ev.getTitle()) === alvo) { janelas.push(intervalo); return; }
+      // No modo planilha, os eventos que só espelham a planilha não contam (a planilha manda)
+      if (CONFIG.FONTE === 'planilha' && String(ev.getDescription() || '').indexOf(CONFIG.MARCA_SINCRONIZADOS) !== -1) return;
       if (String(ev.getMyStatus()) === 'NO') return;                       // convite recusado
       if (typeof ev.getTransparency === 'function' && String(ev.getTransparency()) === 'TRANSPARENT') return; // marcado como "livre"
       ocupados.push(intervalo);
     });
   });
-  ETAPAS.push({ etapa: 'blocos Disponível', info: janelas.length }, { etapa: 'compromissos ocupados', info: ocupados.length });
+  ETAPAS.push({ etapa: 'compromissos ocupados', info: ocupados.length });
+
+  let usarJanelas = CONFIG.SOMENTE_DISPONIVEL ? janelas : null;
+  if (CONFIG.FONTE === 'planilha') {
+    CELULAS_LIVRES = etapa_('ler planilha de agenda', () => celulasLivres_(agora, limite));
+    ETAPAS.push({ etapa: 'células Livre', info: CELULAS_LIVRES.length });
+    usarJanelas = CELULAS_LIVRES.map((c) => [c.inicio, c.fim]);
+  } else {
+    ETAPAS.push({ etapa: 'blocos Disponível', info: janelas.length });
+  }
 
   // 2. Feriados (se falhar, segue sem bloquear feriados)
   const feriados = {};
@@ -178,7 +196,73 @@ function horariosLivres_() {
 
   // 3. Cálculo
   return etapa_('calcular horários', () =>
-    calcularHorarios(ocupados, agora, CONFIG, feriados, CONFIG.SOMENTE_DISPONIVEL ? janelas : null));
+    calcularHorarios(ocupados, agora, CONFIG, feriados, usarJanelas));
+}
+
+// --------------------- Planilha de agenda ---------------------
+
+let CELULAS_LIVRES = [];
+
+/** Converte dia/mês da planilha numa data, escolhendo o ano mais próximo de "agora". */
+function dataDoAno_(dia, mes, agora) {
+  let d = new Date(agora.getFullYear(), mes - 1, dia);
+  if (d.getTime() < agora.getTime() - 180 * 86400000) d = new Date(agora.getFullYear() + 1, mes - 1, dia);
+  if (d.getTime() > agora.getTime() + 180 * 86400000) d = new Date(agora.getFullYear() - 1, mes - 1, dia);
+  return d;
+}
+
+/**
+ * Lê as abas semanais ("09/11 a 14/11"...) e devolve as células "Livre":
+ * [{inicio, fim, aba, linha, coluna}]. Cada linha da planilha vale uma hora.
+ */
+function celulasLivres_(agora, limite) {
+  const livre = normalizar_(CONFIG.TEXTO_LIVRE);
+  const out = [];
+  SpreadsheetApp.openById(CONFIG.PLANILHA_AGENDA_ID).getSheets().forEach((sh) => {
+    const m = sh.getName().match(/^\s*(\d{1,2})\/(\d{1,2})\s*a\s*(\d{1,2})\/(\d{1,2})/);
+    if (!m) return;
+    const ini = dataDoAno_(+m[1], +m[2], agora);
+    const fimSemana = dataDoAno_(+m[3], +m[4], agora);
+    if (fimSemana.getTime() + 86400000 < agora.getTime() || ini.getTime() > limite.getTime()) return;
+    out.push.apply(out, celulasLivresDaAba_(sh.getName(), sh.getDataRange().getDisplayValues(), agora, livre));
+  });
+  return out;
+}
+
+/** Função pura (testável): procura as células "Livre" numa grade de valores. */
+function celulasLivresDaAba_(aba, valores, agora, livre) {
+  const out = [];
+  const h = valores.findIndex((r) => normalizar_(r[0]) === 'horario');
+  if (h < 0) return out;
+  const datas = valores[h].map((c) => {
+    const d = String(c).match(/(\d{1,2})\/(\d{1,2})/);
+    return d ? dataDoAno_(+d[1], +d[2], agora) : null;
+  });
+  for (let r = h + 1; r < valores.length; r++) {
+    const hm = String(valores[r][0]).trim().match(/^(\d{1,2})[:h](\d{2})/);
+    if (!hm) continue;
+    for (let c = 1; c < datas.length; c++) {
+      if (!datas[c] || normalizar_(valores[r][c]) !== livre) continue;
+      const d = datas[c];
+      const inicio = new Date(d.getFullYear(), d.getMonth(), d.getDate(), +hm[1], +hm[2]).getTime();
+      out.push({ inicio: inicio, fim: inicio + CONFIG.INTERVALO_MIN * 60000, aba: aba, linha: r + 1, coluna: c + 1 });
+    }
+  }
+  return out;
+}
+
+/** Escreve o nome do paciente na célula "Livre" do horário. Devolve false se ela não estiver mais livre. */
+function marcarNaPlanilhaAgenda_(p) {
+  const cel = CELULAS_LIVRES.filter((c) => c.inicio === p.inicio.getTime())[0];
+  if (!cel) return false;
+  const range = SpreadsheetApp.openById(CONFIG.PLANILHA_AGENDA_ID).getSheetByName(cel.aba).getRange(cel.linha, cel.coluna);
+  if (normalizar_(range.getDisplayValue()) !== normalizar_(CONFIG.TEXTO_LIVRE)) return false;
+  range.setValue(p.nome)
+    .setFontColor('#000000').setFontWeight('normal').setFontStyle('normal')     // regra: nome em preto, sem negrito/itálico
+    .setNote('Agendado pelo site em ' + fmt_(new Date(), 'dd/MM/yyyy HH:mm') +
+      (p.responsavel1 ? '\nResponsável: ' + p.responsavel1 : '') + '\nTelefone: ' + p.telefone);
+  SpreadsheetApp.flush();
+  return true;
 }
 
 function normalizar_(t) {
@@ -206,6 +290,7 @@ function calcularHorarios(ocupados, agora, cfg, feriados, janelas) {
     janelas.slice().sort((a, b) => a[0] - b[0]).forEach((j) => {
       for (let t = j[0]; t + dur <= j[1]; t += cfg.INTERVALO_MIN * 60000) {
         if (vistos[t] || (feriados && feriados[chaveDia(new Date(t))])) continue;
+        if (cfg.DIAS_SEMANA.indexOf(new Date(t).getDay()) === -1) continue;
         if (livre(t)) { vistos[t] = true; out.push(new Date(t)); }
       }
     });
