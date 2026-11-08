@@ -209,7 +209,7 @@ main { min-height: calc(100vh - 72px - 180px); }
 @media (max-width: 600px) { .shortcuts { grid-template-columns: 1fr; } }
 
 /* ===== Foto, destaque e galeria ===== */
-.hero-photo img { aspect-ratio: 2 / 3; object-position: center top; }
+.hero-photo img { height: auto; aspect-ratio: 1066 / 1244; object-position: center top; }
 .card-featured { background: var(--primary); color: #fff; }
 .card-featured p { color: #d9ebe8; }
 .card-featured .icon { background: rgb(255 255 255 / .15); }
