@@ -303,7 +303,7 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .tag-gold { background: #f5ecd2; color: #7a5f0c; }
 .mentoria h3 { font-size: clamp(1.7rem, 3vw, 2.2rem); }
 .mentoria > div > p { color: var(--muted); }
-.mentoria-numeros { list-style: none; padding: 0; margin: 20px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.mentoria-numeros { list-style: none; padding: 0; margin: 20px 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .mentoria-numeros li { background: var(--tint); border-radius: 12px; padding: 14px 16px; font-size: .88rem; color: var(--muted); text-align: left; line-height: 1.3; }
 .mentoria-numeros strong { display: block; font-family: var(--serif); font-size: 2rem; color: var(--primary); line-height: 1.1; }
 .mentoria-modulos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin: 8px 0 20px; }
@@ -322,7 +322,7 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 }
 @media (max-width: 600px) {
   .mentoria-numeros, .mentoria-modulos, .mentoria-beneficios { grid-template-columns: 1fr; }
-  .mentoria-numeros { grid-template-columns: repeat(3, 1fr); }
+  .mentoria-numeros { grid-template-columns: repeat(2, 1fr); }
   .mentoria-numeros li { padding: 10px; font-size: .78rem; }
   .mentoria-numeros strong { font-size: 1.5rem; }
   .mentoria-botoes .btn { width: 100%; }
