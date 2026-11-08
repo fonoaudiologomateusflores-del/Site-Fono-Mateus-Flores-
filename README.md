@@ -1,5 +1,7 @@
 # Site — Mateus Flores, Fonoaudiólogo
 
+No ar em **https://fonomateusflores.com.br** (GitHub Pages, domínio no Registro.br).
+
 Site estático (HTML, CSS e JavaScript, sem dependências), com as seções:
 Apresentação, Local de atendimento, Agendamento de consulta,
 Cursos e supervisões, Eventos e notícias e Artigos.
