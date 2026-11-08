@@ -340,3 +340,9 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .event-info { text-align: left !important; hyphens: manual !important; margin-top: 6px !important; font-size: .9rem; font-weight: 500; color: var(--primary) !important; }
 .event-passado { opacity: .75; box-shadow: none; }
 .events-vazio { color: var(--muted); }
+.event-org { margin-top: 2px !important; font-size: .85rem !important; text-align: left !important; }
+.event-cartaz { display: block; width: min(280px, 100%); margin-top: 14px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); transition: transform .2s; }
+.event-cartaz:hover { transform: translateY(-2px); }
+.event-cartaz img { width: 100%; height: auto; display: block; }
+.event { align-items: start; }
+.event time, .event .badge { margin-top: 4px; }
