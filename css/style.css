@@ -327,3 +327,9 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
   .mentoria-numeros strong { font-size: 1.5rem; }
   .mentoria-botoes .btn { width: 100%; }
 }
+.preco { display: flex; flex-wrap: wrap; gap: 12px; margin: 4px 0 18px; }
+.preco > div { flex: 1 1 180px; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.preco > div:first-child { border-color: var(--gold); background: #fbf6e6; }
+.preco-rotulo { display: block; font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-ink); }
+.preco strong { display: block; font-family: var(--serif); font-size: 1.6rem; color: var(--primary); line-height: 1.2; }
+.preco small { display: block; font-size: .82rem; color: var(--muted); }
