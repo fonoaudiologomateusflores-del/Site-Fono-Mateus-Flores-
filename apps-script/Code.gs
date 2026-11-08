@@ -35,7 +35,7 @@ const CONFIG = {
   ANTECEDENCIA_MIN_HORAS: 48,      // não permite agendar com menos que isso
   ANTECEDENCIA_MAX_DIAS: 30,       // até quantos dias à frente aparece
 
-  TITULO_EVENTO: 'Consulta (site) – ',
+  TITULO_EVENTO: 'Consulta (site)',   // sem nome de paciente no Google Agenda (regra do consultório)
   ENDERECO: 'Av. Luiz Manoel Gonzaga, 351, Sala 703 – Três Figueiras, Porto Alegre – RS',
   WHATSAPP: '(51) 99555-2044',
   NOME_PROFISSIONAL: 'Mateus Flores – Fonoaudiólogo',
@@ -102,8 +102,9 @@ function doPost(e) {
 
     const fim = new Date(p.inicio.getTime() + CONFIG.DURACAO_MIN * 60000);
     const evento = (CONFIG.AGENDA === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(CONFIG.AGENDA))
-      .createEvent(CONFIG.TITULO_EVENTO + p.nome, p.inicio, fim, {
-        description: descricao_(p),
+      .createEvent(CONFIG.TITULO_EVENTO, p.inicio, fim, {
+        description: 'Agendado pelo site. Modalidade: ' + p.modalidade + '.\n' +
+          'Dados do paciente na planilha de agenda, na planilha "Agendamentos do site" e no e-mail de aviso.',
         location: p.modalidade === 'On-line' ? 'On-line' : CONFIG.ENDERECO,
       });
     evento.setVisibility(CalendarApp.Visibility.PRIVATE);

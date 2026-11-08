@@ -55,8 +55,8 @@ conta **fonoaudiologo.mateusflores@gmail.com**, de preferência no computador.
   menor de 18 anos), telefone, e-mail, modalidade, queixa principal e o
   consentimento da LGPD.
 - Ao confirmar:
-  - a consulta é criada na sua agenda como evento **privado**, com os dados na
-    descrição;
+  - a consulta é criada no Google Agenda como **"Consulta (site)"**, sem o nome
+    nem os dados do paciente (regra do consultório);
   - os dados vão para a planilha "Agendamentos do site";
   - o paciente recebe um e-mail de confirmação (sem a queixa) e você recebe um
     e-mail com todos os dados.
