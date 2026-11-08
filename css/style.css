@@ -280,3 +280,7 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 }
 .booking-done p, .done-when, .eyebrow, .tag, .badge { text-align: center; hyphens: manual; }
 .eyebrow { text-align: left; }
+
+/* Foto na Apresentação */
+.about-photo { width: 100%; max-width: 440px; height: auto; margin-top: 28px; border-radius: var(--radius); box-shadow: var(--shadow); }
+@media (max-width: 860px) { .about-photo { max-width: 420px; margin-top: 16px; } }
