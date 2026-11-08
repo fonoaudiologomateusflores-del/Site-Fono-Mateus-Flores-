@@ -297,32 +297,25 @@
         <p class="eyebrow">Eventos e notícias</p>
         <h2>Agenda e novidades</h2>
       </div>
-      <ul class="events">
-        <li class="event">
-          <time datetime="2026-12-05"><span>05</span>dez</time>
+      <!-- Para incluir um evento, copie um <li class="event"> e ajuste a data em data-data (AAAA-MM-DD).
+           O site separa sozinho os próximos eventos dos anteriores. -->
+      <h3 class="events-titulo">Próximos eventos</h3>
+      <ul class="events" id="eventos-proximos">
+        <li class="event" data-data="2026-11-14">
+          <time datetime="2026-11-14T08:30"><span>14</span>nov</time>
           <div>
-            <h3>Palestra: o desenvolvimento da linguagem nos primeiros anos</h3>
-            <p>Encontro aberto para pais e educadores. Local a confirmar.</p>
+            <h3>Round Clínico — O corpo em cena: olhares interdisciplinares sobre a clínica</h3>
+            <p>Participação em mesa-redonda com colegas da fisioterapia, da psicanálise e da psicologia, com discussão de casos clínicos.</p>
+            <p class="event-info">Sábado, 14/11/2026, às 8h30 · Unisinos, Porto Alegre</p>
           </div>
-          <span class="badge">Evento</span>
-        </li>
-        <li class="event">
-          <time datetime="2027-01-20"><span>20</span>jan</time>
-          <div>
-            <h3>Nova turma de supervisão em grupo</h3>
-            <p>Inscrições abertas para o primeiro semestre de 2027. Vagas limitadas.</p>
-          </div>
-          <span class="badge badge-alt">Notícia</span>
-        </li>
-        <li class="event">
-          <time datetime="2027-03-14"><span>14</span>mar</time>
-          <div>
-            <h3>Roda de conversa: gagueira na escola</h3>
-            <p>Encontro para professores e famílias sobre como acolher a criança que gagueja.</p>
-          </div>
-          <span class="badge">Evento</span>
+          <span class="badge">Mesa-redonda</span>
         </li>
       </ul>
+      <p class="events-vazio" hidden>No momento não há eventos agendados. Acompanhe as novidades pelo <a href="https://www.instagram.com/fonomateusflores" target="_blank" rel="noopener">Instagram</a>.</p>
+      <div class="events-anteriores" hidden>
+        <h3 class="events-titulo">Eventos anteriores</h3>
+        <ul class="events" id="eventos-anteriores"></ul>
+      </div>
     </div>
   </section>
 

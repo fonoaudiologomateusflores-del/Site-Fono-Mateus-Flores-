@@ -333,3 +333,10 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .preco-rotulo { display: block; font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-ink); }
 .preco strong { display: block; font-family: var(--serif); font-size: 1.6rem; color: var(--primary); line-height: 1.2; }
 .preco small { display: block; font-size: .82rem; color: var(--muted); }
+
+/* Eventos */
+.events-titulo { font-size: 1.3rem; color: var(--primary); margin: 0 0 14px; }
+.events-anteriores { margin-top: 40px; }
+.event-info { text-align: left !important; hyphens: manual !important; margin-top: 6px !important; font-size: .9rem; font-weight: 500; color: var(--primary) !important; }
+.event-passado { opacity: .75; box-shadow: none; }
+.events-vazio { color: var(--muted); }

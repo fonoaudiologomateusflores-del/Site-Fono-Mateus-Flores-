@@ -68,3 +68,18 @@ showTab(false);
   if (tag) tag.textContent = "4ª turma concluída";
   texto.innerHTML = "<strong>A 4ª turma foi concluída.</strong> Você pode adquirir o curso gravado e estudar no seu ritmo.";
 })();
+
+// Eventos: separa próximos e anteriores pela data (data-data="AAAA-MM-DD")
+(() => {
+  const proximos = document.getElementById("eventos-proximos");
+  if (!proximos) return;
+  const anteriores = document.getElementById("eventos-anteriores");
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const data = (li) => { const [a, m, d] = li.dataset.data.split("-").map(Number); return new Date(a, m - 1, d); };
+  const itens = [...document.querySelectorAll("#eventos .event[data-data]")];
+  itens.filter((li) => data(li) >= hoje).sort((x, y) => data(x) - data(y)).forEach((li) => proximos.appendChild(li));
+  itens.filter((li) => data(li) < hoje).sort((x, y) => data(y) - data(x)).forEach((li) => { li.classList.add("event-passado"); anteriores.appendChild(li); });
+  document.querySelector(".events-vazio").hidden = proximos.children.length > 0;
+  document.querySelector(".events-anteriores").hidden = anteriores.children.length === 0;
+})();
