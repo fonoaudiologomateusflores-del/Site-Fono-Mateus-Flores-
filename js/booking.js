@@ -171,7 +171,7 @@ const FUSO = "America/Sao_Paulo";
       responsavel2: resp1.required ? f.responsavel2.value.trim() : "",
       telefone: f.telefone.value.trim(),
       email: f.email.value.trim(),
-      modalidade: f.modalidade.value,
+      modalidade: "Presencial",
       queixa: f.queixa.value.trim(),
       consentimento: f.consentimento.checked,
       website: f.website.value,
@@ -188,7 +188,6 @@ const FUSO = "America/Sao_Paulo";
       d.responsavel2 && `2º responsável: ${d.responsavel2}`,
       `Telefone: ${d.telefone}`,
       `E-mail: ${d.email}`,
-      `Modalidade: ${d.modalidade}`,
       `Melhor período: ${form.elements.periodo.value}`,
       `Queixa principal: ${d.queixa}`,
     ].filter(Boolean);
@@ -220,7 +219,7 @@ const FUSO = "America/Sao_Paulo";
       if (res.ok) {
         form.hidden = true;
         const quando = fmtLongo.format(horarioEscolhido);
-        done.querySelector(".done-when").textContent = quando.charAt(0).toUpperCase() + quando.slice(1) + " · " + d.modalidade;
+        done.querySelector(".done-when").textContent = quando.charAt(0).toUpperCase() + quando.slice(1);
         done.hidden = false;
         done.focus();
         return;
