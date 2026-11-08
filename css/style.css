@@ -284,3 +284,5 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 /* Foto na Apresentação */
 .about-photo { width: 100%; max-width: 440px; height: auto; margin-top: 28px; border-radius: var(--radius); box-shadow: var(--shadow); }
 @media (max-width: 860px) { .about-photo { max-width: 420px; margin-top: 16px; } }
+.credentials li div { color: var(--ink); }
+.credentials li small { display: block; font-size: .88rem; color: var(--muted); margin-top: 2px; }
