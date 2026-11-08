@@ -1,7 +1,7 @@
 # Site — Mateus Flores, Fonoaudiólogo
 
 Site estático (HTML, CSS e JavaScript, sem dependências), com as seções:
-Apresentação, Áreas de atuação, Local de atendimento, Agendamento de consulta,
+Apresentação, Local de atendimento, Agendamento de consulta,
 Cursos e supervisões, Eventos e notícias e Artigos.
 
 ## Como personalizar
