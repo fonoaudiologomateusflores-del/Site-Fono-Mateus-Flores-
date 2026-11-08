@@ -346,5 +346,8 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .event-cartaz img { width: 100%; height: auto; display: block; }
 .event { align-items: start; }
 .event time, .event .badge { margin-top: 4px; }
-.clube { margin-bottom: 24px; border-left: 4px solid var(--gold); }
-.clube p { max-width: 70ch; }
+.clube-midia { position: relative; }
+.clube-foto { width: 100%; height: auto; border-radius: 10px; display: block; }
+.clube-logo { position: absolute; left: 14px; bottom: 14px; width: 110px; height: auto; border-radius: 10px; box-shadow: 0 6px 18px rgb(0 0 0 / .35); }
+.clube .preco > div { flex: 0 1 260px; }
+.preco-periodo { display: inline !important; font-family: var(--sans); font-size: .95rem !important; }
