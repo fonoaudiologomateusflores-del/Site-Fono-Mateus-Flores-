@@ -218,3 +218,6 @@ main { min-height: calc(100vh - 72px - 180px); }
 .gallery img, .photo-slot { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); }
 .photo-slot { display: grid; place-items: center; background: var(--tint); border: 2px dashed var(--line); color: var(--muted); font-size: .9rem; }
 @media (max-width: 600px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery > :first-child { grid-column: 1 / -1; } }
+.cards-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1080px) { .cards-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .cards-4 { grid-template-columns: 1fr; } }
