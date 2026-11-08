@@ -58,18 +58,26 @@ function configurar() {
   } else {
     Logger.log('Planilha já existe: ' + SpreadsheetApp.openById(props.getProperty('PLANILHA_ID')).getUrl());
   }
-  Logger.log('Horários disponíveis agora: ' + horariosLivres_().length);
+  ETAPAS = [];
+  try {
+    Logger.log('Horários disponíveis agora: ' + horariosLivres_().length);
+  } finally {
+    Logger.log(JSON.stringify(ETAPAS, null, 1));
+  }
 }
 
 // --------------------- Web app ---------------------
 
 function doGet(e) {
+  ETAPAS = [];
+  const diagnostico = e && e.parameter && e.parameter.action === 'diagnostico';
   try {
     const horarios = horariosLivres_().map((d) => d.toISOString());
+    if (diagnostico) return json_({ ok: true, total: horarios.length, primeiros: horarios.slice(0, 5), etapas: ETAPAS });
     return json_({ ok: true, duracao: CONFIG.DURACAO_MIN, horarios: horarios });
   } catch (err) {
     console.error(err);
-    return json_({ ok: false, erro: 'indisponivel' });
+    return json_({ ok: false, erro: 'indisponivel', detalhe: String(err && err.message || err), etapas: ETAPAS });
   }
 }
 
@@ -111,37 +119,66 @@ function doPost(e) {
 
 // --------------------- Disponibilidade ---------------------
 
+// Registro de etapas (usado no diagnóstico: ...exec?action=diagnostico)
+let ETAPAS = [];
+function etapa_(nome, fn) {
+  const t0 = Date.now();
+  try {
+    const r = fn();
+    ETAPAS.push({ etapa: nome, ok: true, ms: Date.now() - t0, info: typeof r === 'number' ? r : undefined });
+    return r;
+  } catch (err) {
+    ETAPAS.push({ etapa: nome, ok: false, ms: Date.now() - t0, erro: String(err && err.message || err) });
+    throw err;
+  }
+}
+
+function agenda_(id) {
+  return id === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(id);
+}
+
 function horariosLivres_() {
   const agora = new Date();
   const limite = new Date(agora.getTime() + (CONFIG.ANTECEDENCIA_MAX_DIAS + 1) * 86400000);
+  const alvo = normalizar_(CONFIG.TITULO_DISPONIVEL);
 
-  const resp = Calendar.Freebusy.query({
-    timeMin: agora.toISOString(),
-    timeMax: limite.toISOString(),
-    timeZone: FUSO,
-    items: CONFIG.AGENDAS_OCUPADAS.map((id) => ({ id: id })),
-  });
+  // 1. Eventos das agendas: blocos "Disponível" viram janelas; o resto ocupa horário
   const ocupados = [];
-  Object.keys(resp.calendars || {}).forEach((id) => {
-    (resp.calendars[id].busy || []).forEach((b) => ocupados.push([new Date(b.start).getTime(), new Date(b.end).getTime()]));
+  const janelas = [];
+  CONFIG.AGENDAS_OCUPADAS.forEach((id) => {
+    const eventos = etapa_('ler agenda ' + id, () => {
+      const cal = agenda_(id);
+      if (!cal) throw new Error('agenda não encontrada: ' + id);
+      return cal.getEvents(agora, limite);
+    });
+    eventos.forEach((ev) => {
+      if (ev.isAllDayEvent()) return;
+      const intervalo = [ev.getStartTime().getTime(), ev.getEndTime().getTime()];
+      if (normalizar_(ev.getTitle()) === alvo) { janelas.push(intervalo); return; }
+      if (String(ev.getMyStatus()) === 'NO') return;                       // convite recusado
+      if (typeof ev.getTransparency === 'function' && String(ev.getTransparency()) === 'TRANSPARENT') return; // marcado como "livre"
+      ocupados.push(intervalo);
+    });
   });
+  ETAPAS.push({ etapa: 'blocos Disponível', info: janelas.length }, { etapa: 'compromissos ocupados', info: ocupados.length });
 
+  // 2. Feriados (se falhar, segue sem bloquear feriados)
   const feriados = {};
   if (CONFIG.AGENDA_FERIADOS) {
-    const cal = CalendarApp.getCalendarById(CONFIG.AGENDA_FERIADOS);
-    if (cal) cal.getEvents(agora, limite).forEach((ev) => {
-      feriados[Utilities.formatDate(ev.getStartTime(), FUSO, 'yyyy-MM-dd')] = true;
-    });
+    try {
+      etapa_('ler feriados', () => {
+        const cal = CalendarApp.getCalendarById(CONFIG.AGENDA_FERIADOS);
+        if (!cal) return 0;
+        const evs = cal.getEvents(agora, limite);
+        evs.forEach((ev) => { feriados[Utilities.formatDate(ev.getStartTime(), FUSO, 'yyyy-MM-dd')] = true; });
+        return evs.length;
+      });
+    } catch (err) { console.warn('Feriados ignorados', err); }
   }
-  let janelas = null;
-  if (CONFIG.SOMENTE_DISPONIVEL) {
-    const alvo = normalizar_(CONFIG.TITULO_DISPONIVEL);
-    const cal = CONFIG.AGENDA === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(CONFIG.AGENDA);
-    janelas = cal.getEvents(agora, limite)
-      .filter((ev) => normalizar_(ev.getTitle()) === alvo)
-      .map((ev) => [ev.getStartTime().getTime(), ev.getEndTime().getTime()]);
-  }
-  return calcularHorarios(ocupados, agora, CONFIG, feriados, janelas);
+
+  // 3. Cálculo
+  return etapa_('calcular horários', () =>
+    calcularHorarios(ocupados, agora, CONFIG, feriados, CONFIG.SOMENTE_DISPONIVEL ? janelas : null));
 }
 
 function normalizar_(t) {
