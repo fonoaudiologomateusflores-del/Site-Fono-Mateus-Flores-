@@ -111,7 +111,7 @@ p { margin: 0 0 1em; }
 /* Courses */
 .courses { grid-template-columns: repeat(3, 1fr); }
 .course { border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; background: var(--surface); }
-.course p { color: var(--muted); }
+.course p { color: var(--muted); font-size: .95rem; }
 .course-featured { background: var(--primary); color: #fff; border-color: var(--primary); }
 .course-featured p, .course.course-featured dd, .course.course-featured dt { color: #d6e6ea; }
 .course-featured .tag { background: rgb(255 255 255 / .15); color: #fff; }
@@ -223,7 +223,7 @@ main { min-height: calc(100vh - 72px - 180px); }
 .gallery img, .photo-slot { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); }
 .photo-slot { display: grid; place-items: center; background: var(--tint); border: 2px dashed var(--line); color: var(--muted); font-size: .9rem; }
 @media (max-width: 600px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery > :first-child { grid-column: 1 / -1; } }
-.cards-4 { grid-template-columns: repeat(4, 1fr); }
+.cards-4 { grid-template-columns: repeat(2, 1fr); }  /* 2 por linha: colunas largas deixam o texto justificado uniforme */
 @media (max-width: 1080px) { .cards-4 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .cards-4 { grid-template-columns: 1fr; } }
 
@@ -270,3 +270,13 @@ main:has(#agendamento:not([hidden])) { background: var(--dark); }
 
 /* Logo no rodapé */
 .footer-logo { width: 190px; height: auto; display: block; margin: -8px 0 8px -10px; }
+
+/* ===== Textos justificados ===== */
+p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .event p, .check span, .shortcut {
+  text-align: justify;
+  hyphens: auto;               /* hifenização em português (lang="pt-BR") evita espaços grandes */
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 6 3 2; /* permite hifenizar palavras a partir de 6 letras */
+}
+.booking-done p, .done-when, .eyebrow, .tag, .badge { text-align: center; hyphens: manual; }
+.eyebrow { text-align: left; }
