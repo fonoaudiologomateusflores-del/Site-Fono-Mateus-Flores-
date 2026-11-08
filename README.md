@@ -16,6 +16,13 @@ Cursos e supervisões, Eventos e notícias e Artigos.
 | Cursos, eventos e artigos | `index.html`, seções `#cursos`, `#eventos`, `#artigos` (copie um bloco para adicionar outro) |
 | Cores | `css/style.css`, variáveis em `:root` |
 
+## Abas
+
+Cada `<section data-tab>` do `index.html` é uma aba. O menu e os links
+(`#sobre`, `#cursos`, …) trocam a aba visível, e o botão "voltar" do navegador
+funciona normalmente. Para criar uma aba nova, adicione uma `<section id="nova" data-tab>`
+e um link `<a href="#nova">` no menu.
+
 ## Agendamento
 
 O formulário monta uma mensagem com os dados do paciente e abre o WhatsApp

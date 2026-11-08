@@ -29,6 +29,7 @@
       <span></span><span></span><span></span>
     </button>
     <nav id="menu" class="nav">
+      <a href="#inicio">Início</a>
       <a href="#sobre">Apresentação</a>
       <a href="#atuacao">Áreas de atuação</a>
       <a href="#local">Atendimento</a>
@@ -40,10 +41,10 @@
   </div>
 </header>
 
-<main id="inicio">
+<main id="conteudo">
 
   <!-- HERO -->
-  <section class="hero">
+  <section id="inicio" class="hero" data-tab>
     <div class="container hero-inner">
       <div class="hero-text">
         <p class="eyebrow">Fonoaudiologia clínica</p>
@@ -63,10 +64,18 @@
         <img src="assets/foto-placeholder.svg" alt="Retrato de Mateus Flores, fonoaudiólogo" width="480" height="560">
       </div>
     </div>
+    <div class="container shortcuts">
+      <a href="#sobre" class="shortcut"><span>Apresentação</span>Quem sou e minha formação</a>
+      <a href="#atuacao" class="shortcut"><span>Áreas de atuação</span>Linguagem, voz, fala e mais</a>
+      <a href="#local" class="shortcut"><span>Atendimento</span>Endereço, horários e on-line</a>
+      <a href="#cursos" class="shortcut"><span>Cursos e supervisões</span>Formação para fonoaudiólogos</a>
+      <a href="#eventos" class="shortcut"><span>Eventos e notícias</span>Agenda e novidades</a>
+      <a href="#artigos" class="shortcut"><span>Artigos</span>Conteúdos para ler com calma</a>
+    </div>
   </section>
 
   <!-- APRESENTAÇÃO -->
-  <section id="sobre" class="section">
+  <section id="sobre" data-tab class="section">
     <div class="container two-col">
       <div>
         <p class="eyebrow">Apresentação</p>
@@ -85,7 +94,7 @@
   </section>
 
   <!-- ÁREAS DE ATUAÇÃO -->
-  <section id="atuacao" class="section section-tint">
+  <section id="atuacao" data-tab class="section section-tint">
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">Áreas de atuação</p>
@@ -128,7 +137,7 @@
   </section>
 
   <!-- LOCAL DE ATENDIMENTO -->
-  <section id="local" class="section">
+  <section id="local" data-tab class="section">
     <div class="container two-col">
       <div>
         <p class="eyebrow">Local de atendimento</p>
@@ -163,7 +172,7 @@
   </section>
 
   <!-- AGENDAMENTO -->
-  <section id="agendamento" class="section section-dark">
+  <section id="agendamento" data-tab class="section section-dark">
     <div class="container two-col">
       <div>
         <p class="eyebrow">Agendamento de consulta</p>
@@ -231,7 +240,7 @@
   </section>
 
   <!-- CURSOS E SUPERVISÕES -->
-  <section id="cursos" class="section">
+  <section id="cursos" data-tab class="section">
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">Cursos e supervisões</p>
@@ -265,7 +274,7 @@
   </section>
 
   <!-- EVENTOS E NOTÍCIAS -->
-  <section id="eventos" class="section section-tint">
+  <section id="eventos" data-tab class="section section-tint">
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">Eventos e notícias</p>
@@ -301,7 +310,7 @@
   </section>
 
   <!-- ARTIGOS -->
-  <section id="artigos" class="section">
+  <section id="artigos" data-tab class="section">
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">Artigos</p>

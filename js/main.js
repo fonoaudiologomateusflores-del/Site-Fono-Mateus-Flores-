@@ -71,8 +71,9 @@ form.addEventListener("submit", (e) => {
 });
 
 // Animação suave ao aparecer
+let io = null;
 if ("IntersectionObserver" in window) {
-  const io = new IntersectionObserver(
+  io = new IntersectionObserver(
     (entries) =>
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -82,8 +83,25 @@ if ("IntersectionObserver" in window) {
       }),
     { threshold: 0.12 }
   );
-  document.querySelectorAll(".card, .course, .event, .article, .section-head").forEach((el) => {
-    el.classList.add("reveal");
-    io.observe(el);
-  });
+  document.querySelectorAll(".card, .course, .event, .article, .section-head").forEach((el) => el.classList.add("reveal"));
 }
+
+// ===== ABAS =====
+// Cada <section data-tab> é uma aba; o endereço (#id) define qual aparece.
+const tabs = [...document.querySelectorAll("[data-tab]")];
+const navLinks = [...nav.querySelectorAll("a")];
+function showTab(scroll = true) {
+  const id = location.hash.slice(1);
+  const current = tabs.find((t) => t.id === id) || tabs[0];
+  tabs.forEach((t) => (t.hidden = t !== current));
+  navLinks.forEach((a) => {
+    if (a.getAttribute("href") === "#" + current.id) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+  document.title = (current.id === "inicio" ? "" : (current.querySelector(".eyebrow")?.textContent + " | ")) + "Mateus Flores | Fonoaudiólogo";
+  if (scroll) window.scrollTo({ top: 0, behavior: "instant" });
+  current.querySelectorAll(".reveal").forEach((el) => el.classList.remove("visible"));
+  requestAnimationFrame(() => current.querySelectorAll(".reveal").forEach((el) => io && io.observe(el)));
+}
+window.addEventListener("hashchange", () => showTab());
+showTab(false);
