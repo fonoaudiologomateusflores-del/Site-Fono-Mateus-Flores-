@@ -354,3 +354,14 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .booking-aviso { text-align: left !important; margin: 0 0 20px; padding: 14px 16px; border-radius: 12px; background: rgb(212 178 76 / .1); border: 1px solid rgb(212 178 76 / .4); color: #e6eff1; font-size: .95rem; }
 .booking-aviso strong { color: var(--gold-light); }
 .note-5anos { color: #e6eff1 !important; font-weight: 400 !important; }
+
+/* Galeria do consultório */
+.gallery-titulo { margin: 56px 0 0; font-size: 1.6rem; color: var(--primary); }
+.gallery { margin-top: 20px; }
+.gallery figure { margin: 0; }
+.gallery figure a { display: block; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.gallery figure img { transition: transform .3s; border-radius: 0; }
+.gallery figure a:hover img { transform: scale(1.03); }
+.gallery figcaption { margin-top: 10px; font-family: var(--serif); font-size: 1.15rem; color: var(--primary); text-align: center; }
+@media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } .gallery > :first-child { grid-column: auto; } }
+.gallery figure img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }

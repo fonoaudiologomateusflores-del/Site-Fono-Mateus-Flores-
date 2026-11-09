@@ -16,7 +16,7 @@ Cursos e supervisões, Eventos e notícias e Artigos.
 | Endereço e mapa | `index.html`, seção `#local` (texto, link do Maps e `iframe`) |
 | Telefone, e-mail, redes sociais | `index.html`, seção `#local` e rodapé |
 | Foto de perfil | `assets/mateus-flores.jpg` (e a versão menor `mateus-flores-600.jpg`) |
-| Fotos do consultório | Salve em `assets/` e troque cada `<div class="photo-slot">` da aba Atendimento por `<img src="assets/consultorio-1.jpg" alt="…">` |
+| Fotos do consultório | `assets/consultorio-*.jpg` (galeria no fim da aba Atendimento) |
 | Cursos e eventos | `index.html`, seções `#cursos` e `#eventos` (copie um bloco para adicionar outro) |
 | Artigos (desativada) | `index.html`, dentro de `<template id="artigos-desativado">` |
 | Cores e fontes | `css/style.css`, variáveis em `:root` (azul-petróleo `#044352`, dourado `#B08D1E`, EB Garamond + Inter) |
