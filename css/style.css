@@ -373,3 +373,16 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .btn-whats { background: #1f9d55; border-color: #1f9d55; }
 .btn-whats:hover { background: #17834a; border-color: #17834a; }
 .preco-antigo { display: block; font-size: .85rem; color: var(--muted); text-decoration-thickness: 1.5px; margin-top: 2px; }
+
+/* Curso AFC gravado */
+.afc-destaque { background: var(--primary); color: #fff; border-radius: 12px; padding: 32px 28px; display: grid; gap: 8px; align-content: center; text-align: center; justify-items: center; min-height: 100%; }
+.afc-destaque svg { width: 72px; height: 72px; fill: none; stroke: var(--gold-light); stroke-width: 2.5; margin-bottom: 6px; }
+.afc-destaque-rotulo { font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-light); }
+.afc-destaque strong { font-family: var(--serif); font-size: 1.9rem; line-height: 1.15; font-weight: 600; }
+.mentoria .afc-destaque p { margin: 6px 0 0; color: #d6e6ea !important; font-size: .95rem; text-align: center !important; }
+.afc .mentoria-beneficios { grid-template-columns: 1fr 1fr; }
+.afc { align-items: stretch; }
+.cursos-realizados-titulo { margin-top: 48px; }
+.event time { line-height: 1.2; }
+@media (max-width: 860px) { .afc-destaque { padding: 24px 20px; } }
+@media (max-width: 600px) { .afc .mentoria-beneficios { grid-template-columns: 1fr; } }
