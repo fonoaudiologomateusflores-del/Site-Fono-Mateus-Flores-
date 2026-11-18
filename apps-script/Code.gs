@@ -52,6 +52,9 @@ const CONFIG = {
   TITULO_EVENTO_SUPERVISAO: 'Supervisão (site) – aguardando Pix',
   VALOR_SUPERVISAO: 'R$ 250,00',
   VALOR_SUPERVISAO_PACOTE: 'R$ 190,00',   // por encontro, pacote a partir de 4 encontros
+  VALOR_PACOTE_POR_ENCONTRO: 190,         // usado para calcular o total do pacote (pago de uma vez)
+  PACOTE_MIN_ENCONTROS: 4,
+  PACOTE_MAX_ENCONTROS: 20,
 };
 // ========================================================
 
@@ -463,9 +466,14 @@ function validarSupervisao_(d) {
     tema: limpar_(d.tema, 1500).replace(/\s+/g, ' '),
     consentimento: d.consentimento === true,
     inicio: new Date(d.inicio),
+    encontros: 1,
   };
   if (!p.nome || p.nome.split(' ').length < 2) return { erro: 'nome' };
   if (!p.perfil) return { erro: 'perfil' };
+  if (p.plano !== 'Encontro avulso') {
+    p.encontros = parseInt(d.encontros, 10);
+    if (!(p.encontros >= CONFIG.PACOTE_MIN_ENCONTROS && p.encontros <= CONFIG.PACOTE_MAX_ENCONTROS)) return { erro: 'encontros' };
+  }
   if (p.telefone.replace(/\D/g, '').length < 10) return { erro: 'telefone' };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return { erro: 'email' };
   if (!p.area) return { erro: 'area' };
@@ -473,8 +481,18 @@ function validarSupervisao_(d) {
   if (!p.plano) return { erro: 'plano' };
   if (!p.consentimento) return { erro: 'consentimento' };
   if (isNaN(p.inicio.getTime())) return { erro: 'horario' };
-  p.valor = p.plano === 'Encontro avulso' ? CONFIG.VALOR_SUPERVISAO : CONFIG.VALOR_SUPERVISAO_PACOTE + ' por encontro';
+  if (p.plano === 'Encontro avulso') {
+    p.valor = CONFIG.VALOR_SUPERVISAO;
+    p.planoDetalhe = 'Encontro avulso';
+  } else {
+    p.valor = reais_(p.encontros * CONFIG.VALOR_PACOTE_POR_ENCONTRO);
+    p.planoDetalhe = 'Pacote de ' + p.encontros + ' encontros (' + CONFIG.VALOR_SUPERVISAO_PACOTE + ' cada), pago de uma vez';
+  }
   return p;
+}
+
+function reais_(n) {
+  return 'R$ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 function descricaoSupervisao_(p) {
@@ -485,7 +503,7 @@ function descricaoSupervisao_(p) {
     'Perfil: ' + p.perfil + (p.registro ? ' (' + p.registro + ')' : ''),
     'Área: ' + p.area,
     'Modalidade: ' + p.modalidade,
-    'Plano: ' + p.plano + ' – ' + p.valor,
+    'Plano: ' + p.planoDetalhe + ' – total ' + p.valor,
     'Telefone: ' + p.telefone,
     'E-mail: ' + p.email,
     p.tema ? '\nTema / caso:\n' + p.tema : '',
@@ -501,7 +519,7 @@ function agendarSupervisao_(dados, lock) {
   if (livres.indexOf(p.inicio.getTime()) === -1) return json_({ ok: false, erro: 'horario_ocupado' });
   const nota = 'Supervisão pré-agendada pelo site em ' + fmt_(new Date(), 'dd/MM/yyyy HH:mm') +
     '\nAGUARDANDO COMPROVANTE PIX' +
-    '\nÁrea: ' + p.area + ' · ' + p.modalidade + '\nPlano: ' + p.plano + '\nTelefone: ' + p.telefone;
+    '\nÁrea: ' + p.area + ' · ' + p.modalidade + '\nPlano: ' + p.planoDetalhe + ' – ' + p.valor + '\nTelefone: ' + p.telefone;
   if (!marcarNaPlanilhaAgenda_(p, CONFIG.TEXTO_LIVRE_SUPERVISAO, 'Supervisão – ' + p.nome, nota)) {
     return json_({ ok: false, erro: 'horario_ocupado' });
   }
@@ -521,7 +539,7 @@ function agendarSupervisao_(dados, lock) {
 
   const pix = PropertiesService.getScriptProperties().getProperty('PIX_CHAVE') || '';
   enviarEmailsSupervisao_(p, pix);
-  return json_({ ok: true, inicio: p.inicio.toISOString(), valor: p.valor, plano: p.plano, pix: pix });
+  return json_({ ok: true, inicio: p.inicio.toISOString(), valor: p.valor, plano: p.planoDetalhe, encontros: p.encontros, pix: pix });
 }
 
 function registrarSupervisao_(p, eventoId) {
@@ -537,7 +555,7 @@ function registrarSupervisao_(p, eventoId) {
     sh.getRange(1, 1, 1, 15).setFontWeight('bold');
   }
   sh.appendRow([new Date(), fmt_(p.inicio, 'dd/MM/yyyy'), fmt_(p.inicio, 'HH:mm'), p.nome, p.perfil, p.registro,
-    p.area, p.modalidade, p.plano, p.valor, "'" + p.telefone, p.email, p.tema, 'Aguardando Pix', eventoId]);
+    p.area, p.modalidade, p.planoDetalhe, p.valor, "'" + p.telefone, p.email, p.tema, 'Aguardando Pix', eventoId]);
 }
 
 function enviarEmailsSupervisao_(p, pix) {
@@ -552,14 +570,15 @@ function enviarEmailsSupervisao_(p, pix) {
         '',
         'Seu horário de supervisão (' + p.area + ', ' + p.modalidade.toLowerCase() + ') está pré-reservado para ' + quando + '.',
         '',
-        'Para confirmar, faça o Pix de ' + p.valor + (p.plano === 'Encontro avulso' ? '' : ' (pacote a partir de 4 encontros)') +
+        'Para confirmar, faça o Pix de ' + p.valor + (p.plano === 'Encontro avulso' ? '' : ' (' + p.planoDetalhe.toLowerCase() + ')') +
           (pix ? ' para a chave ' + pix : '') + ' e envie o comprovante pelo WhatsApp ' + CONFIG.WHATSAPP + '.',
         'O encontro é confirmado após o recebimento do comprovante.',
+        p.plano === 'Encontro avulso' ? null : 'Este é o primeiro encontro do pacote; as datas dos demais serão combinadas pelo WhatsApp.',
         '',
         p.modalidade === 'On-line' ? 'O link do Google Meet será enviado no horário da supervisão.' : 'Endereço: ' + CONFIG.ENDERECO,
         '',
         CONFIG.NOME_PROFISSIONAL,
-      ].join('\n'),
+      ].filter((l) => l !== null).join('\n'),
     });
     MailApp.sendEmail({
       to: Session.getEffectiveUser().getEmail(),

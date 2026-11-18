@@ -104,6 +104,29 @@
     status.textContent = "Escolha o horário:";
   }
 
+  // Pacote: quantidade de encontros e total (pago de uma vez)
+  const campoEncontros = document.getElementById("sup-encontros-campo");
+  const inputEncontros = $("#sup-encontros");
+  const total = $(".sup-total");
+  const reais = (n) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const ehPacote = () => form.elements.plano.value.startsWith("Pacote");
+  function atualizarTotal() {
+    campoEncontros.hidden = !ehPacote();
+    const plano = form.elements.plano.value;
+    if (!plano) { total.hidden = true; return; }
+    if (ehPacote()) {
+      const n = parseInt(inputEncontros.value, 10);
+      total.innerHTML = n >= 4 && n <= 20
+        ? `Total do pacote: <strong>${reais(n * 190)}</strong> (${n} encontros de R$ 190,00), pago de uma vez via Pix.`
+        : "O pacote é de 4 a 20 encontros.";
+    } else {
+      total.innerHTML = "Total: <strong>R$ 250,00</strong>, via Pix.";
+    }
+    total.hidden = false;
+  }
+  form.elements.plano.addEventListener("change", atualizarTotal);
+  inputEncontros.addEventListener("input", atualizarTotal);
+
   const limparErro = (e) => {
     if (e.target.getAttribute("aria-invalid") === "true") e.target.setAttribute("aria-invalid", "false");
   };
@@ -122,6 +145,8 @@
     marcar(f.area, !f.area.value);
     marcar(f.modalidade, !f.modalidade.value);
     marcar(f.plano, !f.plano.value);
+    const nEnc = parseInt(f.encontros.value, 10);
+    marcar(f.encontros, ehPacote() && !(nEnc >= 4 && nEnc <= 20));
     marcar(f.telefone, f.telefone.value.replace(/\D/g, "").length < 10);
     marcar(f.email, !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim()));
     marcar(f.consentimento, !f.consentimento.checked);
@@ -138,6 +163,7 @@
   const MENSAGENS = {
     horario_ocupado: "Esse horário acabou de ser reservado. Atualizamos a lista: escolha outro, por favor.",
     email: "Confira o e-mail informado.",
+    encontros: "O pacote é de 4 a 20 encontros.",
     telefone: "Confira o telefone, com DDD.",
   };
 
@@ -153,6 +179,7 @@
       area: f.area.value,
       modalidade: f.modalidade.value,
       plano: f.plano.value,
+      encontros: ehPacote() ? parseInt(f.encontros.value, 10) : 1,
       telefone: f.telefone.value.trim(),
       email: f.email.value.trim(),
       tema: f.tema.value.trim(),
@@ -183,9 +210,10 @@
     const quando = capitalizar(fmtLongo.format(horarioEscolhido));
     form.hidden = true;
     done.querySelector(".done-when").textContent = `${quando} · ${d.area} · ${d.modalidade}`;
-    const valor = res.valor || (d.plano === "Encontro avulso" ? "R$ 250,00" : "R$ 190,00 por encontro");
+    const valor = res.valor || (d.plano === "Encontro avulso" ? "R$ 250,00" : reais(d.encontros * 190));
     done.querySelector(".sup-pix-valor").textContent =
-      valor + (d.plano === "Encontro avulso" ? "" : " (pacote a partir de 4 encontros)");
+      valor + (d.plano === "Encontro avulso" ? "" : ` (pacote de ${d.encontros} encontros)`);
+    done.querySelector(".sup-pacote-nota").hidden = d.plano === "Encontro avulso";
     const caixaChave = done.querySelector(".sup-pix-chave");
     if (res.pix) {
       caixaChave.querySelector("code").textContent = res.pix;
@@ -204,7 +232,7 @@
       `Nome: ${d.nome}`,
       `Data: ${quando}`,
       `Área: ${d.area} · ${d.modalidade}`,
-      `Plano: ${d.plano}`,
+      d.plano === "Encontro avulso" ? "Plano: Encontro avulso (R$ 250,00)" : `Plano: Pacote de ${d.encontros} encontros (${valor})`,
       "Segue o comprovante do Pix.",
     ].join("\n");
     done.querySelector(".sup-enviar").href = `https://wa.me/${ZAP}?text=${encodeURIComponent(msg)}`;

@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261118b">
+  <link rel="stylesheet" href="css/style.css?v=20261118c">
 </head>
 <body>
 
@@ -273,9 +273,9 @@
             <p class="sup-valores-titulo">Investimento</p>
             <div class="preco">
               <div><span class="preco-rotulo">Encontro avulso</span><strong>R$ 250,00</strong></div>
-              <div><span class="preco-rotulo">Pacote a partir de 4 encontros</span><strong>R$ 190,00</strong><small>por encontro</small></div>
+              <div><span class="preco-rotulo">Pacote a partir de 4 encontros</span><strong>R$ 190,00</strong><small>por encontro · pago de uma vez no agendamento (4 encontros = R$ 760,00)</small></div>
             </div>
-            <p class="sup-valores-nota">Pagamento via Pix. O encontro é confirmado após o envio do comprovante pelo WhatsApp.</p>
+            <p class="sup-valores-nota">Pagamento via Pix no ato do agendamento. O encontro é confirmado após o envio do comprovante pelo WhatsApp.</p>
           </div>
         </fieldset>
 
@@ -317,14 +317,21 @@
               </select>
             </div>
           </div>
-          <div class="field">
-            <label for="sup-plano">Plano *</label>
-            <select id="sup-plano" name="plano" required>
-              <option value="">Selecione</option>
-              <option value="Encontro avulso">Encontro avulso – R$ 250,00</option>
-              <option value="Pacote (a partir de 4 encontros)">Pacote a partir de 4 encontros – R$ 190,00 por encontro</option>
-            </select>
+          <div class="field-row">
+            <div class="field">
+              <label for="sup-plano">Plano *</label>
+              <select id="sup-plano" name="plano" required>
+                <option value="">Selecione</option>
+                <option value="Encontro avulso">Avulso – R$ 250</option>
+                <option value="Pacote (a partir de 4 encontros)">Pacote – R$ 190/encontro</option>
+              </select>
+            </div>
+            <div class="field" id="sup-encontros-campo" hidden>
+              <label for="sup-encontros">Quantidade de encontros *</label>
+              <input id="sup-encontros" name="encontros" type="number" min="4" max="20" step="1" value="4" inputmode="numeric">
+            </div>
           </div>
+          <p class="sup-total" role="status" hidden></p>
           <div class="field-row">
             <div class="field">
               <label for="sup-telefone">Telefone / WhatsApp *</label>
@@ -358,6 +365,7 @@
           <p>Para confirmar, faça o Pix de <strong class="sup-pix-valor"></strong></p>
           <div class="sup-pix-chave" hidden><span>Chave Pix</span><code></code><button type="button" class="sup-copiar">Copiar</button></div>
           <p>e envie o comprovante pelo WhatsApp. O encontro é confirmado após o recebimento.</p>
+          <p class="sup-pacote-nota" hidden>Este é o primeiro encontro do pacote. As datas dos demais são combinadas pelo WhatsApp.</p>
         </div>
         <a class="btn btn-whats sup-enviar" href="#" target="_blank" rel="noopener">Enviar comprovante pelo WhatsApp</a>
         <p class="small-light">Enviamos estas informações também para o seu e-mail.</p>
@@ -639,8 +647,8 @@
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z"/></svg>
 </a>
 
-<script src="js/main.js?v=20261118b"></script>
-<script src="js/booking.js?v=20261118b"></script>
-<script src="js/supervisao.js?v=20261118b"></script>
+<script src="js/main.js?v=20261118c"></script>
+<script src="js/booking.js?v=20261118c"></script>
+<script src="js/supervisao.js?v=20261118c"></script>
 </body>
 </html>

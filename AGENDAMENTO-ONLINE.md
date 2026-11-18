@@ -86,8 +86,10 @@ O mesmo script também agenda supervisões (aba `#supervisao` do site):
   Células "Livre" continuam sendo só para pacientes.
 - O formulário pede: nome, perfil (fonoaudiólogo/estudante), CRFa ou
   instituição, área (Fluência ou Linguagem Oral), modalidade (on-line ou
-  presencial), plano (avulso R$ 250 ou pacote a partir de 4 encontros,
-  R$ 190 por encontro), telefone, e-mail e tema (opcional).
+  presencial), plano (avulso R$ 250 ou pacote de 4 a 20 encontros, R$ 190 por
+  encontro, **pago de uma vez no agendamento** — o site calcula o total),
+  telefone, e-mail e tema (opcional). No pacote, a reserva é do primeiro
+  encontro; as demais datas são combinadas pelo WhatsApp.
 - Ao reservar: a célula vira **"Supervisão – Nome"** (com nota "aguardando
   comprovante Pix"), o Google Agenda recebe **"Supervisão (site) – aguardando
   Pix"**, os dados vão para a aba **"Supervisões"** da planilha "Agendamentos do

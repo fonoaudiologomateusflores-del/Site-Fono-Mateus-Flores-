@@ -422,3 +422,6 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .sup-copiar { font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 999px; border: 0; background: var(--gold-light); color: var(--dark); cursor: pointer; font-weight: 600; }
 .sup-done .btn-whats { width: auto; }
 .small-light { text-align: left !important; }
+.sup-total { margin: -4px 0 0; padding: 10px 14px; border-radius: 10px; background: rgb(212 178 76 / .1); border: 1px solid rgb(212 178 76 / .35); color: #e6eff1; font-size: .95rem; text-align: left !important; }
+.sup-total strong { color: var(--gold-light); }
+.sup-pacote-nota { font-size: .9rem; color: #cfdde1; }
