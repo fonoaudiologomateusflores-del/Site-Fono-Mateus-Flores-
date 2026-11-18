@@ -393,3 +393,6 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .supervisao p { font-size: 1.05rem; }
 .supervisao .btn-light { width: auto; align-self: flex-start; margin-top: 8px; }
 @media (max-width: 600px) { .supervisao { padding: 24px 20px; } .supervisao .btn-light { width: 100%; } }
+.sup-formatos { list-style: none; padding: 0; margin: 4px 0 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+.sup-formatos li { background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .2); border-radius: 999px; padding: 6px 14px; font-size: .92rem; color: #e6eff1; }
+.sup-formatos strong { color: var(--gold-light); font-weight: 600; }
