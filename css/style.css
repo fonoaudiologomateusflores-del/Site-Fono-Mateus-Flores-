@@ -365,3 +365,11 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .gallery figcaption { margin-top: 10px; font-family: var(--serif); font-size: 1.15rem; color: var(--primary); text-align: center; }
 @media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } .gallery > :first-child { grid-column: auto; } }
 .gallery figure img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.mentoria-sub { display: block; font-size: 1.1rem; font-weight: 400; color: var(--gold-ink); font-style: italic; margin-top: 2px; }
+.mentoria-numeros:has(li:nth-child(3)) { grid-template-columns: repeat(3, 1fr); }
+.como-comprar { margin: 0 0 18px; padding-left: 1.3em; display: grid; gap: 6px; font-size: .95rem; color: var(--ink); }
+.como-comprar li { text-align: left; }
+.como-comprar li::marker { color: var(--gold); font-weight: 700; }
+.btn-whats { background: #1f9d55; border-color: #1f9d55; }
+.btn-whats:hover { background: #17834a; border-color: #17834a; }
+.preco-antigo { display: block; font-size: .85rem; color: var(--muted); text-decoration-thickness: 1.5px; margin-top: 2px; }
