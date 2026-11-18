@@ -386,3 +386,10 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .event time { line-height: 1.2; }
 @media (max-width: 860px) { .afc-destaque { padding: 24px 20px; } }
 @media (max-width: 600px) { .afc .mentoria-beneficios { grid-template-columns: 1fr; } }
+
+/* Supervisão em destaque no topo da aba Cursos */
+.supervisao { padding: 36px 40px; margin-bottom: 24px; }
+.supervisao h3 { font-size: clamp(1.6rem, 3vw, 2.1rem); color: #fff; }
+.supervisao p { font-size: 1.05rem; }
+.supervisao .btn-light { width: auto; align-self: flex-start; margin-top: 8px; }
+@media (max-width: 600px) { .supervisao { padding: 24px 20px; } .supervisao .btn-light { width: 100%; } }
