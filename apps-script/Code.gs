@@ -3,9 +3,13 @@
  *
  * Este script roda na conta Google do consultório e faz a ponte entre o site
  * e o Google Agenda:
- *   GET  ?action=horarios  -> lista os horários livres
- *   POST (JSON)            -> cria a consulta na agenda, registra na planilha
- *                             e envia e-mails de confirmação
+ *   GET  ?action=horarios[&tipo=supervisao] -> lista os horários livres
+ *   POST (JSON)            -> cria a consulta (ou a supervisão) na agenda,
+ *                             registra na planilha e envia e-mails
+ *
+ * Supervisão: horários vêm das células "Livre Supervisão" da planilha de agenda.
+ * A chave Pix NÃO fica neste código (o projeto é público): cadastre-a em
+ * Configurações do projeto → Propriedades do script → PIX_CHAVE.
  *
  * Instalação: veja AGENDAMENTO-ONLINE.md na raiz do projeto.
  */
@@ -41,6 +45,13 @@ const CONFIG = {
   NOME_PROFISSIONAL: 'Mateus Flores – Fonoaudiólogo',
   ENVIAR_EMAIL_PACIENTE: true,
   ENVIAR_EMAIL_PROFISSIONAL: true,
+
+  // ----- Supervisão clínica -----
+  TEXTO_LIVRE_SUPERVISAO: 'Livre Supervisão',
+  DURACAO_SUPERVISAO_MIN: 60,
+  TITULO_EVENTO_SUPERVISAO: 'Supervisão (site) – aguardando Pix',
+  VALOR_SUPERVISAO: 'R$ 250,00',
+  VALOR_SUPERVISAO_PACOTE: 'R$ 190,00',   // por encontro, pacote a partir de 4 encontros
 };
 // ========================================================
 
@@ -76,10 +87,11 @@ function configurar() {
 function doGet(e) {
   ETAPAS = [];
   const diagnostico = e && e.parameter && e.parameter.action === 'diagnostico';
+  const tipo = e && e.parameter && e.parameter.tipo === 'supervisao' ? 'supervisao' : 'consulta';
   try {
-    const horarios = horariosLivres_().map((d) => d.toISOString());
-    if (diagnostico) return json_({ ok: true, total: horarios.length, primeiros: horarios.slice(0, 5), etapas: ETAPAS });
-    return json_({ ok: true, duracao: CONFIG.DURACAO_MIN, horarios: horarios });
+    const horarios = horariosLivres_(tipo).map((d) => d.toISOString());
+    if (diagnostico) return json_({ ok: true, tipo: tipo, total: horarios.length, primeiros: horarios.slice(0, 5), etapas: ETAPAS });
+    return json_({ ok: true, duracao: duracao_(tipo), horarios: horarios });
   } catch (err) {
     console.error(err);
     return json_({ ok: false, erro: 'indisponivel', detalhe: String(err && err.message || err), etapas: ETAPAS });
@@ -91,6 +103,7 @@ function doPost(e) {
   try {
     const dados = JSON.parse(e.postData.contents);
     if (dados.website) return json_({ ok: true }); // armadilha anti-robô
+    if (dados.tipo === 'supervisao') return agendarSupervisao_(dados, lock);
 
     const p = validar_(dados);
     if (p.erro) return json_({ ok: false, erro: p.erro });
@@ -144,7 +157,16 @@ function agenda_(id) {
   return id === 'primary' ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(id);
 }
 
-function horariosLivres_() {
+function duracao_(tipo) {
+  return tipo === 'supervisao' ? CONFIG.DURACAO_SUPERVISAO_MIN : CONFIG.DURACAO_MIN;
+}
+
+function textoLivre_(tipo) {
+  return tipo === 'supervisao' ? CONFIG.TEXTO_LIVRE_SUPERVISAO : CONFIG.TEXTO_LIVRE;
+}
+
+function horariosLivres_(tipo) {
+  tipo = tipo || 'consulta';
   const agora = new Date();
   const limite = new Date(agora.getTime() + (CONFIG.ANTECEDENCIA_MAX_DIAS + 1) * 86400000);
   const alvo = normalizar_(CONFIG.TITULO_DISPONIVEL);
@@ -174,8 +196,8 @@ function horariosLivres_() {
 
   let usarJanelas = CONFIG.SOMENTE_DISPONIVEL ? janelas : null;
   if (CONFIG.FONTE === 'planilha') {
-    CELULAS_LIVRES = etapa_('ler planilha de agenda', () => celulasLivres_(agora, limite));
-    ETAPAS.push({ etapa: 'células Livre', info: CELULAS_LIVRES.length });
+    CELULAS_LIVRES = etapa_('ler planilha de agenda', () => celulasLivres_(agora, limite, textoLivre_(tipo)));
+    ETAPAS.push({ etapa: 'células "' + textoLivre_(tipo) + '"', info: CELULAS_LIVRES.length });
     usarJanelas = CELULAS_LIVRES.map((c) => [c.inicio, c.fim]);
   } else {
     ETAPAS.push({ etapa: 'blocos Disponível', info: janelas.length });
@@ -197,7 +219,7 @@ function horariosLivres_() {
 
   // 3. Cálculo
   return etapa_('calcular horários', () =>
-    calcularHorarios(ocupados, agora, CONFIG, feriados, usarJanelas));
+    calcularHorarios(ocupados, agora, Object.assign({}, CONFIG, { DURACAO_MIN: duracao_(tipo) }), feriados, usarJanelas));
 }
 
 // --------------------- Planilha de agenda ---------------------
@@ -216,8 +238,8 @@ function dataDoAno_(dia, mes, agora) {
  * Lê as abas semanais ("09/11 a 14/11"...) e devolve as células "Livre":
  * [{inicio, fim, aba, linha, coluna}]. Cada linha da planilha vale uma hora.
  */
-function celulasLivres_(agora, limite) {
-  const livre = normalizar_(CONFIG.TEXTO_LIVRE);
+function celulasLivres_(agora, limite, texto) {
+  const livre = normalizar_(texto || CONFIG.TEXTO_LIVRE);
   const out = [];
   SpreadsheetApp.openById(CONFIG.PLANILHA_AGENDA_ID).getSheets().forEach((sh) => {
     const m = sh.getName().match(/^\s*(\d{1,2})\/(\d{1,2})\s*a\s*(\d{1,2})\/(\d{1,2})/);
@@ -253,15 +275,15 @@ function celulasLivresDaAba_(aba, valores, agora, livre) {
 }
 
 /** Escreve o nome do paciente na célula "Livre" do horário. Devolve false se ela não estiver mais livre. */
-function marcarNaPlanilhaAgenda_(p) {
+function marcarNaPlanilhaAgenda_(p, texto, valorCelula, nota) {
   const cel = CELULAS_LIVRES.filter((c) => c.inicio === p.inicio.getTime())[0];
   if (!cel) return false;
   const range = SpreadsheetApp.openById(CONFIG.PLANILHA_AGENDA_ID).getSheetByName(cel.aba).getRange(cel.linha, cel.coluna);
-  if (normalizar_(range.getDisplayValue()) !== normalizar_(CONFIG.TEXTO_LIVRE)) return false;
-  range.setValue(p.nome)
+  if (normalizar_(range.getDisplayValue()) !== normalizar_(texto || CONFIG.TEXTO_LIVRE)) return false;
+  range.setValue(valorCelula || p.nome)
     .setFontColor('#000000').setFontWeight('normal').setFontStyle('normal')     // regra: nome em preto, sem negrito/itálico
-    .setNote('Agendado pelo site em ' + fmt_(new Date(), 'dd/MM/yyyy HH:mm') +
-      (p.responsavel1 ? '\nResponsável: ' + p.responsavel1 : '') + '\nTelefone: ' + p.telefone);
+    .setNote(nota || ('Agendado pelo site em ' + fmt_(new Date(), 'dd/MM/yyyy HH:mm') +
+      (p.responsavel1 ? '\nResponsável: ' + p.responsavel1 : '') + '\nTelefone: ' + p.telefone));
   SpreadsheetApp.flush();
   return true;
 }
@@ -423,4 +445,128 @@ function enviarEmails_(p) {
 
 function json_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// --------------------- Supervisão clínica ---------------------
+
+function validarSupervisao_(d) {
+  const umDe = (v, opcoes) => (opcoes.indexOf(v) !== -1 ? v : '');
+  const p = {
+    nome: limpar_(d.nome, 120),
+    perfil: umDe(d.perfil, ['Fonoaudiólogo(a)', 'Estudante de Fonoaudiologia']),
+    registro: limpar_(d.registro, 120),
+    telefone: limpar_(d.telefone, 30),
+    email: limpar_(d.email, 120),
+    area: umDe(d.area, ['Fluência', 'Linguagem Oral']),
+    modalidade: umDe(d.modalidade, ['On-line', 'Presencial']),
+    plano: umDe(d.plano, ['Encontro avulso', 'Pacote (a partir de 4 encontros)']),
+    tema: limpar_(d.tema, 1500).replace(/\s+/g, ' '),
+    consentimento: d.consentimento === true,
+    inicio: new Date(d.inicio),
+  };
+  if (!p.nome || p.nome.split(' ').length < 2) return { erro: 'nome' };
+  if (!p.perfil) return { erro: 'perfil' };
+  if (p.telefone.replace(/\D/g, '').length < 10) return { erro: 'telefone' };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return { erro: 'email' };
+  if (!p.area) return { erro: 'area' };
+  if (!p.modalidade) return { erro: 'modalidade' };
+  if (!p.plano) return { erro: 'plano' };
+  if (!p.consentimento) return { erro: 'consentimento' };
+  if (isNaN(p.inicio.getTime())) return { erro: 'horario' };
+  p.valor = p.plano === 'Encontro avulso' ? CONFIG.VALOR_SUPERVISAO : CONFIG.VALOR_SUPERVISAO_PACOTE + ' por encontro';
+  return p;
+}
+
+function descricaoSupervisao_(p) {
+  return [
+    'Supervisão pré-agendada pelo site',
+    '',
+    'Nome: ' + p.nome,
+    'Perfil: ' + p.perfil + (p.registro ? ' (' + p.registro + ')' : ''),
+    'Área: ' + p.area,
+    'Modalidade: ' + p.modalidade,
+    'Plano: ' + p.plano + ' – ' + p.valor,
+    'Telefone: ' + p.telefone,
+    'E-mail: ' + p.email,
+    p.tema ? '\nTema / caso:\n' + p.tema : '',
+  ].filter((l) => l !== '').join('\n');
+}
+
+function agendarSupervisao_(dados, lock) {
+  const p = validarSupervisao_(dados);
+  if (p.erro) return json_({ ok: false, erro: p.erro });
+
+  lock.waitLock(20000);
+  const livres = horariosLivres_('supervisao').map((d) => d.getTime());
+  if (livres.indexOf(p.inicio.getTime()) === -1) return json_({ ok: false, erro: 'horario_ocupado' });
+  const nota = 'Supervisão pré-agendada pelo site em ' + fmt_(new Date(), 'dd/MM/yyyy HH:mm') +
+    '\nAGUARDANDO COMPROVANTE PIX' +
+    '\nÁrea: ' + p.area + ' · ' + p.modalidade + '\nPlano: ' + p.plano + '\nTelefone: ' + p.telefone;
+  if (!marcarNaPlanilhaAgenda_(p, CONFIG.TEXTO_LIVRE_SUPERVISAO, 'Supervisão – ' + p.nome, nota)) {
+    return json_({ ok: false, erro: 'horario_ocupado' });
+  }
+
+  const fim = new Date(p.inicio.getTime() + CONFIG.DURACAO_SUPERVISAO_MIN * 60000);
+  const evento = agenda_(CONFIG.AGENDA).createEvent(CONFIG.TITULO_EVENTO_SUPERVISAO, p.inicio, fim, {
+    description: 'Supervisão pré-agendada pelo site. Área: ' + p.area + '. Modalidade: ' + p.modalidade + '.\n' +
+      'Confirmar após o comprovante do Pix. Dados na planilha de agenda, na planilha "Agendamentos do site" e no e-mail de aviso.',
+    location: p.modalidade === 'On-line' ? 'On-line (Google Meet – link enviado no horário)' : CONFIG.ENDERECO,
+  });
+  evento.setVisibility(CalendarApp.Visibility.PRIVATE);
+  evento.removeAllReminders();
+  evento.addPopupReminder(60);
+
+  registrarSupervisao_(p, evento.getId());
+  lock.releaseLock();
+
+  const pix = PropertiesService.getScriptProperties().getProperty('PIX_CHAVE') || '';
+  enviarEmailsSupervisao_(p, pix);
+  return json_({ ok: true, inicio: p.inicio.toISOString(), valor: p.valor, plano: p.plano, pix: pix });
+}
+
+function registrarSupervisao_(p, eventoId) {
+  const id = PropertiesService.getScriptProperties().getProperty('PLANILHA_ID');
+  if (!id) return;
+  const ss = SpreadsheetApp.openById(id);
+  let sh = ss.getSheetByName('Supervisões');
+  if (!sh) {
+    sh = ss.insertSheet('Supervisões');
+    sh.appendRow(['Registrado em', 'Data', 'Horário', 'Nome', 'Perfil', 'CRFa / Instituição', 'Área',
+      'Modalidade', 'Plano', 'Valor', 'Telefone', 'E-mail', 'Tema / caso', 'Pagamento', 'ID do evento']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 15).setFontWeight('bold');
+  }
+  sh.appendRow([new Date(), fmt_(p.inicio, 'dd/MM/yyyy'), fmt_(p.inicio, 'HH:mm'), p.nome, p.perfil, p.registro,
+    p.area, p.modalidade, p.plano, p.valor, "'" + p.telefone, p.email, p.tema, 'Aguardando Pix', eventoId]);
+}
+
+function enviarEmailsSupervisao_(p, pix) {
+  const quando = dataPorExtenso_(p.inicio);
+  try {
+    MailApp.sendEmail({
+      to: p.email,
+      name: CONFIG.NOME_PROFISSIONAL,
+      subject: 'Supervisão pré-agendada – ' + quando,
+      body: [
+        'Olá, ' + p.nome.split(' ')[0] + '!',
+        '',
+        'Seu horário de supervisão (' + p.area + ', ' + p.modalidade.toLowerCase() + ') está pré-reservado para ' + quando + '.',
+        '',
+        'Para confirmar, faça o Pix de ' + p.valor + (p.plano === 'Encontro avulso' ? '' : ' (pacote a partir de 4 encontros)') +
+          (pix ? ' para a chave ' + pix : '') + ' e envie o comprovante pelo WhatsApp ' + CONFIG.WHATSAPP + '.',
+        'O encontro é confirmado após o recebimento do comprovante.',
+        '',
+        p.modalidade === 'On-line' ? 'O link do Google Meet será enviado no horário da supervisão.' : 'Endereço: ' + CONFIG.ENDERECO,
+        '',
+        CONFIG.NOME_PROFISSIONAL,
+      ].join('\n'),
+    });
+    MailApp.sendEmail({
+      to: Session.getEffectiveUser().getEmail(),
+      subject: 'Nova supervisão pré-agendada: ' + p.nome + ' – ' + quando,
+      body: descricaoSupervisao_(p) + '\n\nAguardando comprovante do Pix.',
+    });
+  } catch (err) {
+    console.error('Falha ao enviar e-mail da supervisão', err);
+  }
 }

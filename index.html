@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261118">
+  <link rel="stylesheet" href="css/style.css?v=20261118b">
 </head>
 <body>
 
@@ -248,6 +248,123 @@
     </div>
   </section>
 
+  <!-- AGENDAMENTO DE SUPERVISÃO -->
+  <section id="supervisao" data-tab class="section section-dark">
+    <div class="container booking-layout">
+      <div class="booking-intro">
+        <p class="eyebrow">Supervisão clínica</p>
+        <h2>Agende sua supervisão</h2>
+        <p>Para fonoaudiólogos e estudantes de Fonoaudiologia, nas áreas de Fluência e Linguagem Oral, on-line ou presencial em Porto Alegre.</p>
+        <ul class="booking-facts">
+          <li><strong>Duração</strong> 1 hora</li>
+        </ul>
+        <p class="booking-aviso"><strong>Como funciona:</strong> você escolhe o horário e ele fica pré-reservado. A supervisão é confirmada após o pagamento via Pix e o envio do comprovante pelo WhatsApp.</p>
+        <p class="small-light">Supervisão em grupo ou outras dúvidas? <a href="https://wa.me/5551995552044" target="_blank" rel="noopener">Fale pelo WhatsApp</a>.</p>
+        <p class="small-light"><a href="#cursos">← Voltar para Cursos e supervisões</a></p>
+      </div>
+
+      <form id="sup-form" class="form" novalidate>
+        <fieldset class="step">
+          <legend><span class="step-num">1</span> Escolha o horário</legend>
+          <div class="slots-status" role="status">Carregando horários disponíveis…</div>
+          <div class="days" role="radiogroup" aria-label="Dia" hidden></div>
+          <div class="times" role="radiogroup" aria-label="Horário" hidden></div>
+          <div class="sup-valores" hidden>
+            <p class="sup-valores-titulo">Investimento</p>
+            <div class="preco">
+              <div><span class="preco-rotulo">Encontro avulso</span><strong>R$ 250,00</strong></div>
+              <div><span class="preco-rotulo">Pacote a partir de 4 encontros</span><strong>R$ 190,00</strong><small>por encontro</small></div>
+            </div>
+            <p class="sup-valores-nota">Pagamento via Pix. O encontro é confirmado após o envio do comprovante pelo WhatsApp.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend><span class="step-num">2</span> Seus dados</legend>
+          <div class="field">
+            <label for="sup-nome">Nome completo *</label>
+            <input id="sup-nome" name="nome" type="text" autocomplete="name" required maxlength="120">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="sup-perfil">Você é *</label>
+              <select id="sup-perfil" name="perfil" required>
+                <option value="">Selecione</option>
+                <option>Fonoaudiólogo(a)</option>
+                <option>Estudante de Fonoaudiologia</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sup-registro">CRFa ou instituição/semestre</label>
+              <input id="sup-registro" name="registro" type="text" maxlength="120">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="sup-area">Área da supervisão *</label>
+              <select id="sup-area" name="area" required>
+                <option value="">Selecione</option>
+                <option>Fluência</option>
+                <option>Linguagem Oral</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sup-modalidade">Modalidade *</label>
+              <select id="sup-modalidade" name="modalidade" required>
+                <option value="">Selecione</option>
+                <option value="On-line">On-line</option>
+                <option value="Presencial">Presencial (Porto Alegre)</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="sup-plano">Plano *</label>
+            <select id="sup-plano" name="plano" required>
+              <option value="">Selecione</option>
+              <option value="Encontro avulso">Encontro avulso – R$ 250,00</option>
+              <option value="Pacote (a partir de 4 encontros)">Pacote a partir de 4 encontros – R$ 190,00 por encontro</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="sup-telefone">Telefone / WhatsApp *</label>
+              <input id="sup-telefone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="(51) 90000-0000">
+            </div>
+            <div class="field">
+              <label for="sup-email">E-mail *</label>
+              <input id="sup-email" name="email" type="email" autocomplete="email" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="sup-tema">Tema ou caso que deseja discutir (opcional)</label>
+            <textarea id="sup-tema" name="tema" rows="3" maxlength="1500"></textarea>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="consentimento" id="sup-consentimento" required>
+            <span>Autorizo o uso dos dados informados para fins de agendamento da supervisão, conforme a LGPD. *</span>
+          </label>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        </fieldset>
+
+        <p class="form-error" role="alert" hidden></p>
+        <button type="submit" class="btn btn-light">Pré-reservar horário</button>
+      </form>
+
+      <div class="booking-done sup-done" hidden tabindex="-1">
+        <div class="done-icon" aria-hidden="true">✓</div>
+        <h3>Horário pré-reservado!</h3>
+        <p class="done-when"></p>
+        <div class="sup-pix">
+          <p>Para confirmar, faça o Pix de <strong class="sup-pix-valor"></strong></p>
+          <div class="sup-pix-chave" hidden><span>Chave Pix</span><code></code><button type="button" class="sup-copiar">Copiar</button></div>
+          <p>e envie o comprovante pelo WhatsApp. O encontro é confirmado após o recebimento.</p>
+        </div>
+        <a class="btn btn-whats sup-enviar" href="#" target="_blank" rel="noopener">Enviar comprovante pelo WhatsApp</a>
+        <p class="small-light">Enviamos estas informações também para o seu e-mail.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- CURSOS E SUPERVISÕES -->
   <section id="cursos" data-tab class="section">
     <div class="container">
@@ -264,7 +381,10 @@
           <li><strong>On-line</strong> ou <strong>presencial</strong> em Porto Alegre</li>
           <li><strong>Individual</strong> ou <strong>em grupo</strong></li>
         </ul>
-        <a href="https://wa.me/5551995552044?text=Ol%C3%A1%2C%20Mateus%21%20Tenho%20interesse%20em%20supervis%C3%A3o%20cl%C3%ADnica." target="_blank" rel="noopener" class="btn btn-light">Solicitar supervisão</a>
+        <div class="sup-botoes">
+          <a href="#supervisao" class="btn btn-light">Agendar supervisão</a>
+          <a href="https://wa.me/5551995552044?text=Ol%C3%A1%2C%20Mateus%21%20Tenho%20interesse%20em%20supervis%C3%A3o%20cl%C3%ADnica%20em%20grupo." target="_blank" rel="noopener" class="sup-grupo">Supervisão em grupo? Fale pelo WhatsApp</a>
+        </div>
       </article>
 
       <article class="mentoria">
@@ -519,7 +639,8 @@
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z"/></svg>
 </a>
 
-<script src="js/main.js?v=20261118"></script>
-<script src="js/booking.js?v=20261118"></script>
+<script src="js/main.js?v=20261118b"></script>
+<script src="js/booking.js?v=20261118b"></script>
+<script src="js/supervisao.js?v=20261118b"></script>
 </body>
 </html>

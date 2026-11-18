@@ -76,3 +76,31 @@ Implantar**. O link continua o mesmo.
 A queixa principal é um dado de saúde (dado sensível). Os dados ficam apenas na
 sua conta Google (Agenda, Planilha e Gmail). Mantenha a verificação em duas
 etapas ativa na conta e não compartilhe a planilha.
+
+## Supervisão clínica
+
+O mesmo script também agenda supervisões (aba `#supervisao` do site):
+
+- Os horários vêm das células **"Livre Supervisão"** da planilha de agenda
+  (cada célula = 1 hora), com as mesmas regras de antecedência e feriados.
+  Células "Livre" continuam sendo só para pacientes.
+- O formulário pede: nome, perfil (fonoaudiólogo/estudante), CRFa ou
+  instituição, área (Fluência ou Linguagem Oral), modalidade (on-line ou
+  presencial), plano (avulso R$ 250 ou pacote a partir de 4 encontros,
+  R$ 190 por encontro), telefone, e-mail e tema (opcional).
+- Ao reservar: a célula vira **"Supervisão – Nome"** (com nota "aguardando
+  comprovante Pix"), o Google Agenda recebe **"Supervisão (site) – aguardando
+  Pix"**, os dados vão para a aba **"Supervisões"** da planilha "Agendamentos do
+  site" e os dois recebem e-mail. A pessoa vê a chave Pix e um botão para enviar
+  o comprovante pelo WhatsApp.
+- Depois de receber o comprovante, mude o título do evento (por exemplo, tirando
+  "– aguardando Pix") e a coluna "Pagamento" da aba Supervisões. Se o pagamento
+  não vier, volte a célula para "Livre Supervisão" e apague o evento.
+
+### Chave Pix (não fica no código)
+
+O projeto do site é público, então a chave Pix fica guardada só no Google:
+**Apps Script → ⚙ Configurações do projeto → Propriedades do script →
+Adicionar propriedade do script** → Propriedade `PIX_CHAVE`, Valor: a sua chave
+→ **Salvar**. Para trocar a chave depois, basta editar esse valor (não precisa
+publicar nova versão).

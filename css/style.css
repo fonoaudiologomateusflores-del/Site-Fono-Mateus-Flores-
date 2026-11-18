@@ -396,3 +396,29 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .sup-formatos { list-style: none; padding: 0; margin: 4px 0 16px; display: flex; flex-wrap: wrap; gap: 10px; }
 .sup-formatos li { background: rgb(255 255 255 / .1); border: 1px solid rgb(255 255 255 / .2); border-radius: 999px; padding: 6px 14px; font-size: .92rem; color: #e6eff1; }
 .sup-formatos strong { color: var(--gold-light); font-weight: 600; }
+
+/* ===== Agendamento de supervisão ===== */
+.sup-botoes { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 8px; }
+.sup-botoes .btn-light { margin-top: 0; }
+.sup-grupo { color: #e6eff1 !important; font-size: .95rem; text-decoration: underline; text-underline-offset: 3px; }
+.sup-grupo:hover { color: var(--gold-light) !important; }
+.sup-valores { border-top: 1px solid rgb(255 255 255 / .15); padding-top: 16px; }
+.sup-valores-titulo { margin: 0 0 10px; font-size: .8rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-light); }
+.sup-valores .preco { margin: 0 0 10px; }
+.sup-valores .preco > div { background: rgb(255 255 255 / .06); border-color: rgb(255 255 255 / .2); }
+.sup-valores .preco > div:first-child { background: rgb(212 178 76 / .12); border-color: rgb(212 178 76 / .5); }
+.sup-valores .preco strong { color: #fff; }
+.sup-valores .preco small { color: #b5c9ce; }
+.sup-valores .preco-rotulo { color: var(--gold-light); }
+.sup-valores-nota { margin: 0; font-size: .9rem; color: #cfdde1; text-align: left !important; }
+.status-link, .slots-status a { color: var(--gold-light); }
+.sup-pix { margin: 16px 0 20px; color: #e6eff1; }
+.sup-pix p { margin: 6px 0; text-align: center !important; }
+.sup-pix-valor { color: var(--gold-light); }
+.sup-pix-chave { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin: 8px 0; padding: 10px 14px; border-radius: 12px; background: rgb(255 255 255 / .08); border: 1px dashed rgb(212 178 76 / .6); }
+.sup-pix-chave[hidden] { display: none; }
+.sup-pix-chave span { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-light); }
+.sup-pix-chave code { font-size: 1.15rem; color: #fff; font-family: ui-monospace, Menlo, monospace; }
+.sup-copiar { font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 999px; border: 0; background: var(--gold-light); color: var(--dark); cursor: pointer; font-weight: 600; }
+.sup-done .btn-whats { width: auto; }
+.small-light { text-align: left !important; }
