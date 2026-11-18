@@ -49,6 +49,7 @@ const CONFIG = {
   // ----- Supervisão clínica -----
   TEXTO_LIVRE_SUPERVISAO: 'Livre Supervisão',
   DURACAO_SUPERVISAO_MIN: 60,
+  DIAS_SEMANA_SUPERVISAO: [0, 1, 2, 3, 4, 5, 6], // qualquer dia com "Livre Supervisão" na planilha
   TITULO_EVENTO_SUPERVISAO: 'Supervisão (site) – aguardando Pix',
   VALOR_SUPERVISAO: 'R$ 250,00',
   VALOR_SUPERVISAO_PACOTE: 'R$ 190,00',   // por encontro, pacote a partir de 4 encontros
@@ -222,7 +223,10 @@ function horariosLivres_(tipo) {
 
   // 3. Cálculo
   return etapa_('calcular horários', () =>
-    calcularHorarios(ocupados, agora, Object.assign({}, CONFIG, { DURACAO_MIN: duracao_(tipo) }), feriados, usarJanelas));
+    calcularHorarios(ocupados, agora, Object.assign({}, CONFIG, {
+      DURACAO_MIN: duracao_(tipo),
+      DIAS_SEMANA: tipo === 'supervisao' ? CONFIG.DIAS_SEMANA_SUPERVISAO : CONFIG.DIAS_SEMANA,
+    }), feriados, usarJanelas));
 }
 
 // --------------------- Planilha de agenda ---------------------
