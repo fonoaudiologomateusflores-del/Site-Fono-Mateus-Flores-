@@ -466,3 +466,5 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .opcoes-pagamento .opcao span { flex: 1; text-align: left; }
 .field .opcao { font-size: 1rem; color: #fff; }
 .cupom-linha input { min-width: 0; width: 100%; } .cupom-linha .btn { flex: none; } .opcoes-pagamento, .opcao { min-width: 0; }
+.crono-bonus { background: #fbf6e6; border-radius: 8px; padding: 6px 8px; margin: 2px -8px 0; }
+.mais-bonus { display: block; font-style: normal; font-size: .8rem; font-weight: 600; color: var(--gold-ink); margin-top: 2px; }
