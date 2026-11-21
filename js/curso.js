@@ -190,7 +190,9 @@
       box.hidden = false;
     } else {
       const box = done.querySelector(".curso-pagar-cartao");
-      box.querySelector(".curso-link").href = res.link;
+      let link = String(res.link || "").trim().replace(/\s+/g, "");
+      if (link && !/^https?:\/\//i.test(link)) link = "https://" + link.replace(/^\/+/, "");
+      box.querySelector(".curso-link").href = link;
       box.hidden = false;
     }
     const texto = [
