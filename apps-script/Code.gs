@@ -7,6 +7,10 @@
  *   POST (JSON)            -> cria a consulta (ou a supervisão) na agenda,
  *                             registra na planilha e envia e-mails
  *
+ *   GET  ?action=curso       -> situação das inscrições do curso (vagas)
+ *   GET  ?action=cupom&codigo=X -> confere o código de ex-aluno
+ *   POST (JSON, tipo=curso)  -> registra a inscrição e devolve o pagamento
+ *
  * Supervisão: horários vêm das células "Livre Supervisão" da planilha de agenda.
  * A chave Pix NÃO fica neste código (o projeto é público): cadastre-a em
  * Configurações do projeto → Propriedades do script → PIX_CHAVE.
@@ -53,7 +57,20 @@ const CONFIG = {
   TITULO_EVENTO_SUPERVISAO: 'Supervisão (site) – aguardando Pix',
   VALOR_SUPERVISAO: 'R$ 250,00',
   VALOR_SUPERVISAO_PACOTE: 'R$ 190,00',   // por encontro, pacote a partir de 4 encontros
-  VALOR_PACOTE_POR_ENCONTRO: 190,         // usado para calcular o total do pacote (pago de uma vez)
+  VALOR_PACOTE_POR_ENCONTRO: 190,
+
+  // ----- Curso com inscrição pelo site -----
+  // Links de pagamento, código de ex-aluno e valores de ex-aluno ficam nas
+  // Propriedades do script (o projeto é público): CURSO_LINK_GERAL,
+  // CURSO_LINK_EXALUNO, CURSO_CUPOM, CURSO_EXALUNO_PIX, CURSO_EXALUNO_CARTAO.
+  CURSO: {
+    NOME: 'Avaliação formal da linguagem oral: dos protocolos ao plano terapêutico',
+    VAGAS: 25,
+    INSCRICOES_ATE: '2027-01-18',          // último dia de inscrição (inclusive)
+    INICIO: '18 de janeiro de 2027',
+    GERAL_PIX: 746.00,
+    GERAL_CARTAO: 935.00,                  // total no cartão, em até 10x
+  },         // usado para calcular o total do pacote (pago de uma vez)
   PACOTE_MIN_ENCONTROS: 4,
   PACOTE_MAX_ENCONTROS: 20,
 };
@@ -92,6 +109,9 @@ function doGet(e) {
   ETAPAS = [];
   const diagnostico = e && e.parameter && e.parameter.action === 'diagnostico';
   const tipo = e && e.parameter && e.parameter.tipo === 'supervisao' ? 'supervisao' : 'consulta';
+  const action = e && e.parameter && e.parameter.action;
+  if (action === 'curso') return json_(situacaoCurso_());
+  if (action === 'cupom') return json_(conferirCupom_(e.parameter.codigo));
   try {
     const horarios = horariosLivres_(tipo).map((d) => d.toISOString());
     if (diagnostico) return json_({ ok: true, tipo: tipo, total: horarios.length, primeiros: horarios.slice(0, 5), etapas: ETAPAS });
@@ -108,6 +128,7 @@ function doPost(e) {
     const dados = JSON.parse(e.postData.contents);
     if (dados.website) return json_({ ok: true }); // armadilha anti-robô
     if (dados.tipo === 'supervisao') return agendarSupervisao_(dados, lock);
+    if (dados.tipo === 'curso') return inscreverCurso_(dados, lock);
 
     const p = validar_(dados);
     if (p.erro) return json_({ ok: false, erro: p.erro });
@@ -591,5 +612,157 @@ function enviarEmailsSupervisao_(p, pix) {
     });
   } catch (err) {
     console.error('Falha ao enviar e-mail da supervisão', err);
+  }
+}
+
+// --------------------- Curso: inscrições ---------------------
+
+function prop_(nome) {
+  return PropertiesService.getScriptProperties().getProperty(nome) || '';
+}
+
+function abaInscricoes_() {
+  const id = prop_('PLANILHA_ID');
+  if (!id) return null;
+  const ss = SpreadsheetApp.openById(id);
+  let sh = ss.getSheetByName('Inscrições');
+  if (!sh) {
+    sh = ss.insertSheet('Inscrições');
+    sh.appendRow(['Registrado em', 'Curso', 'Nome (certificado)', 'Perfil', 'CRFa / Instituição', 'Cidade/UF',
+      'Telefone', 'E-mail', 'Ex-aluno Mentoria', 'Forma de pagamento', 'Valor', 'Situação']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 12).setFontWeight('bold');
+  }
+  return sh;
+}
+
+/** Inscrições que ocupam vaga (tudo que não estiver "Cancelada"). */
+function inscricoesAtivas_() {
+  const sh = abaInscricoes_();
+  if (!sh || sh.getLastRow() < 2) return 0;
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 12).getValues()
+    .filter((r) => r[1] === CONFIG.CURSO.NOME && normalizar_(r[11]) !== 'cancelada').length;
+}
+
+function situacaoCurso_() {
+  try {
+    const [a, m, d] = CONFIG.CURSO.INSCRICOES_ATE.split('-').map(Number);
+    const encerradoPorData = new Date() > new Date(a, m - 1, d, 23, 59, 59);
+    const restantes = Math.max(0, CONFIG.CURSO.VAGAS - inscricoesAtivas_());
+    return { ok: true, curso: true, aberto: !encerradoPorData && restantes > 0, vagas: CONFIG.CURSO.VAGAS,
+      restantes: restantes, motivo: encerradoPorData ? 'prazo' : (restantes > 0 ? '' : 'esgotado') };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, curso: true, erro: 'indisponivel' };
+  }
+}
+
+function cupomValido_(codigo) {
+  const oficial = normalizar_(prop_('CURSO_CUPOM')).replace(/\s+/g, '');
+  return !!oficial && normalizar_(codigo).replace(/\s+/g, '') === oficial;
+}
+
+function valoresCurso_(exAluno) {
+  if (exAluno) {
+    const pix = parseFloat(String(prop_('CURSO_EXALUNO_PIX')).replace(',', '.'));
+    const cartao = parseFloat(String(prop_('CURSO_EXALUNO_CARTAO')).replace(',', '.'));
+    if (!(pix > 0 && cartao > 0)) return null;
+    return { pix: pix, cartao: cartao };
+  }
+  return { pix: CONFIG.CURSO.GERAL_PIX, cartao: CONFIG.CURSO.GERAL_CARTAO };
+}
+
+function textoValores_(v) {
+  return { pix: reais_(v.pix), cartao: reais_(v.cartao), parcela: reais_(Math.round(v.cartao * 10) / 100) };
+}
+
+function conferirCupom_(codigo) {
+  // Pequena pausa contra tentativas em sequência
+  Utilities.sleep(400);
+  if (!cupomValido_(codigo)) return { ok: true, valido: false };
+  const v = valoresCurso_(true);
+  if (!v) return { ok: false, erro: 'config' };
+  return { ok: true, valido: true, valores: textoValores_(v) };
+}
+
+function inscreverCurso_(d, lock) {
+  const umDe = (v, opcoes) => (opcoes.indexOf(v) !== -1 ? v : '');
+  const p = {
+    nome: limpar_(d.nome, 120),
+    perfil: umDe(d.perfil, ['Fonoaudiólogo(a)', 'Estudante de Fonoaudiologia']),
+    registro: limpar_(d.registro, 120),
+    cidade: limpar_(d.cidade, 80),
+    telefone: limpar_(d.telefone, 30),
+    email: limpar_(d.email, 120),
+    pagamento: umDe(d.pagamento, ['Pix', 'Cartão de crédito']),
+    cupom: limpar_(d.cupom, 60),
+    consentimento: d.consentimento === true,
+  };
+  if (!p.nome || p.nome.split(' ').length < 2) return json_({ ok: false, erro: 'nome' });
+  if (!p.perfil) return json_({ ok: false, erro: 'perfil' });
+  if (p.telefone.replace(/\D/g, '').length < 10) return json_({ ok: false, erro: 'telefone' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) return json_({ ok: false, erro: 'email' });
+  if (!p.pagamento) return json_({ ok: false, erro: 'pagamento' });
+  if (!p.consentimento) return json_({ ok: false, erro: 'consentimento' });
+  const exAluno = !!p.cupom && cupomValido_(p.cupom);
+  if (p.cupom && !exAluno) return json_({ ok: false, erro: 'cupom' });
+
+  const v = valoresCurso_(exAluno);
+  const link = prop_(exAluno ? 'CURSO_LINK_EXALUNO' : 'CURSO_LINK_GERAL');
+  const pix = prop_('PIX_CHAVE');
+  if (!v || (p.pagamento === 'Pix' && !pix) || (p.pagamento !== 'Pix' && !link)) return json_({ ok: false, erro: 'config' });
+  const t = textoValores_(v);
+  const valor = p.pagamento === 'Pix' ? t.pix + ' no Pix' : 'até 10x de ' + t.parcela + ' (total ' + t.cartao + ') no cartão';
+
+  lock.waitLock(20000);
+  const sit = situacaoCurso_();
+  if (!sit.ok || !sit.aberto) return json_({ ok: false, erro: sit.motivo || 'indisponivel' });
+  abaInscricoes_().appendRow([new Date(), CONFIG.CURSO.NOME, p.nome, p.perfil, p.registro, p.cidade, "'" + p.telefone,
+    p.email, exAluno ? 'Sim' : 'Não', p.pagamento, valor, 'Aguardando pagamento']);
+  lock.releaseLock();
+
+  enviarEmailsCurso_(p, valor, exAluno, link, pix);
+  return json_({ ok: true, exAluno: exAluno, pagamento: p.pagamento, valor: valor,
+    link: p.pagamento === 'Pix' ? '' : link, pix: p.pagamento === 'Pix' ? pix : '' });
+}
+
+function enviarEmailsCurso_(p, valor, exAluno, link, pix) {
+  try {
+    MailApp.sendEmail({
+      to: p.email,
+      name: CONFIG.NOME_PROFISSIONAL,
+      subject: 'Inscrição recebida – ' + CONFIG.CURSO.NOME,
+      body: [
+        'Olá, ' + p.nome.split(' ')[0] + '!',
+        '',
+        'Recebemos sua inscrição no curso "' + CONFIG.CURSO.NOME + '", com início em ' + CONFIG.CURSO.INICIO + '.',
+        '',
+        'Valor: ' + valor + (exAluno ? ' (condição para ex-alunos da Mentoria Linguagem Infantil)' : '') + '.',
+        p.pagamento === 'Pix' ? 'Chave Pix: ' + pix : 'Link de pagamento: ' + link,
+        '',
+        'Depois de pagar, envie o comprovante pelo WhatsApp ' + CONFIG.WHATSAPP + ' ou respondendo a este e-mail.',
+        'Sua vaga é confirmada após o recebimento do comprovante.',
+        '',
+        CONFIG.NOME_PROFISSIONAL,
+      ].join('\n'),
+    });
+    MailApp.sendEmail({
+      to: Session.getEffectiveUser().getEmail(),
+      subject: 'Nova inscrição no curso: ' + p.nome,
+      body: [
+        'Curso: ' + CONFIG.CURSO.NOME,
+        'Nome (certificado): ' + p.nome,
+        'Perfil: ' + p.perfil + (p.registro ? ' (' + p.registro + ')' : ''),
+        p.cidade ? 'Cidade/UF: ' + p.cidade : '',
+        'Telefone: ' + p.telefone,
+        'E-mail: ' + p.email,
+        'Ex-aluno da Mentoria: ' + (exAluno ? 'sim' : 'não'),
+        'Pagamento: ' + valor,
+        '',
+        'Aguardando comprovante.',
+      ].filter((l) => l !== '').join('\n'),
+    });
+  } catch (err) {
+    console.error('Falha ao enviar e-mail da inscrição', err);
   }
 }

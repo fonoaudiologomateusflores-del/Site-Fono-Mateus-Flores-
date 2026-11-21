@@ -106,3 +106,26 @@ O projeto do site é público, então a chave Pix fica guardada só no Google:
 Adicionar propriedade do script** → Propriedade `PIX_CHAVE`, Valor: a sua chave
 → **Salvar**. Para trocar a chave depois, basta editar esse valor (não precisa
 publicar nova versão).
+
+## Inscrição em curso (Avaliação formal da linguagem oral)
+
+A aba `#inscricao` do site usa o mesmo script.
+
+- A pessoa preenche nome (para o certificado), perfil, CRFa/instituição,
+  telefone, e-mail, cidade e escolhe **Pix** ou **cartão**. Ex-alunos da
+  Mentoria clicam em "Tenho um código de ex-aluno", digitam o código e veem os
+  valores especiais, que **não aparecem no site** antes disso.
+- Só depois da inscrição aparece a chave Pix ou o link de pagamento do cartão,
+  com botões para enviar o comprovante por WhatsApp ou e-mail.
+- Cada inscrição vai para a aba **"Inscrições"** da planilha "Agendamentos do
+  site", com a situação "Aguardando pagamento". Ao receber o comprovante, mude
+  para "Pago". Para liberar a vaga de quem desistiu, escreva **"Cancelada"**.
+- Inscrições ativas ocupam vaga mesmo antes do pagamento. As inscrições fecham
+  sozinhas quando as vagas acabam ou após o prazo definido no bloco `CURSO`.
+
+### Propriedades do script do curso (não ficam no código público)
+
+Em **⚙ Configurações do projeto → Propriedades do script**, adicione:
+`CURSO_CUPOM` (código de ex-aluno), `CURSO_LINK_GERAL` e `CURSO_LINK_EXALUNO`
+(links do cartão), `CURSO_EXALUNO_PIX` e `CURSO_EXALUNO_CARTAO` (valores de
+ex-aluno, só números). A chave Pix é a mesma `PIX_CHAVE` da supervisão.

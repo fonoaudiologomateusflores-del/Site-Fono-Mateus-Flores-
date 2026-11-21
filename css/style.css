@@ -425,3 +425,44 @@ p, .prose li, .credentials li, .info-list li, .booking-facts li, .steps li, .eve
 .sup-total { margin: -4px 0 0; padding: 10px 14px; border-radius: 10px; background: rgb(212 178 76 / .1); border: 1px solid rgb(212 178 76 / .35); color: #e6eff1; font-size: .95rem; text-align: left !important; }
 .sup-total strong { color: var(--gold-light); }
 .sup-pacote-nota { font-size: .9rem; color: #cfdde1; }
+
+/* ===== Curso com inscrição ===== */
+.cronograma { margin: 4px 0 20px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.cronograma summary { cursor: pointer; font-weight: 600; color: var(--primary); }
+.cronograma ol { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.cronograma li { display: grid; grid-template-columns: 54px 1fr; gap: 10px; font-size: .92rem; color: var(--ink); text-align: left; }
+.cronograma time { font-weight: 700; color: var(--gold-ink); }
+.vagas-aviso { margin: 0 0 14px; font-size: .95rem; color: var(--muted); }
+.curso-status { margin: 0 0 4px; color: #e6eff1; font-size: .95rem; text-align: left !important; }
+.curso-status:empty { display: none; }
+.curso-status a { color: var(--gold-light); }
+.cupom-abrir { background: none; border: 0; padding: 0; font: inherit; font-size: .92rem; color: var(--gold-light); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: left; }
+.cupom-campo { margin-top: 10px; display: grid; gap: 6px; }
+.cupom-campo label { font-size: .88rem; font-weight: 500; color: #cfdde1; }
+.cupom-linha { display: flex; gap: 8px; }
+.cupom-linha input { flex: 1; font: inherit; font-size: 1rem; padding: 10px 14px; border-radius: 10px; border: 2px solid transparent; text-transform: uppercase; }
+.cupom-linha input:read-only { background: #e9f2ee; }
+.cupom-linha .btn { background: var(--gold-light); border-color: var(--gold-light); color: var(--dark); }
+.cupom-msg { margin: 0; font-size: .9rem; color: #cfdde1; text-align: left !important; }
+.cupom-msg.ok { color: #9be3b5; }
+.cupom-msg.erro { color: #ffb4ab; }
+.field-label { font-size: .88rem; font-weight: 500; color: #cfdde1; }
+.opcoes-pagamento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opcoes-pagamento.invalido .opcao { border-color: #ff8a80; }
+.opcao { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; border: 1.5px solid rgb(255 255 255 / .2); background: rgb(255 255 255 / .05); cursor: pointer; }
+.opcao:has(input:checked) { border-color: var(--gold-light); background: rgb(212 178 76 / .12); }
+.opcao input { margin-top: 4px; accent-color: #d4b24c; }
+.opcao strong { display: block; color: #fff; }
+.opcao em { font-style: normal; font-size: .88rem; color: var(--gold-light); }
+.curso-pagar-pix, .curso-pagar-cartao { margin: 14px 0; color: #e6eff1; }
+.curso-pagar-pix p, .curso-pagar-cartao p, .curso-comprovante { text-align: center !important; color: #e6eff1; }
+.curso-valor { color: var(--gold-light); }
+.curso-pagar-cartao .btn-light { width: auto; }
+.curso-enviar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 10px; }
+.curso-enviar .btn-ghost { color: #fff; border-color: rgb(255 255 255 / .6); }
+.curso-enviar .btn-ghost:hover { background: #fff; color: var(--dark); }
+@media (max-width: 600px) { .opcoes-pagamento { grid-template-columns: 1fr; } .curso-enviar .btn { width: 100%; } }
+.opcoes-pagamento .opcao input { width: 18px; height: 18px; padding: 0; flex: none; border: 0; }
+.opcoes-pagamento .opcao span { flex: 1; text-align: left; }
+.field .opcao { font-size: 1rem; color: #fff; }
+.cupom-linha input { min-width: 0; width: 100%; } .cupom-linha .btn { flex: none; } .opcoes-pagamento, .opcao { min-width: 0; }

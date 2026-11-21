@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261118c">
+  <link rel="stylesheet" href="css/style.css?v=20261121">
 </head>
 <body>
 
@@ -248,6 +248,112 @@
     </div>
   </section>
 
+  <!-- INSCRIÇÃO NO CURSO -->
+  <section id="inscricao" data-tab class="section section-dark">
+    <div class="container booking-layout">
+      <div class="booking-intro">
+        <p class="eyebrow">Inscrição · turma inaugural</p>
+        <h2>Avaliação formal da linguagem oral</h2>
+        <p>Dos protocolos ao plano terapêutico. 12 encontros quinzenais ao vivo e on-line, às segundas, das 19h às 21h30, a partir de 18 de janeiro de 2027.</p>
+        <ul class="booking-facts">
+          <li><strong>No Pix</strong> R$ 746,00</li>
+          <li><strong>No cartão</strong> até 10x de R$ 93,50 (total R$ 935,00)</li>
+        </ul>
+        <p class="booking-aviso"><strong>Como funciona:</strong> preencha a inscrição e escolha a forma de pagamento. Em seguida aparecem a chave Pix ou o link do cartão. Sua vaga é confirmada após o envio do comprovante pelo WhatsApp ou por e-mail.</p>
+        <p class="small-light"><a href="#cursos">← Voltar para Cursos e supervisões</a></p>
+      </div>
+
+      <form id="curso-form" class="form" novalidate>
+        <p class="curso-status" role="status">Verificando vagas…</p>
+        <fieldset class="step">
+          <legend><span class="step-num">1</span> Seus dados</legend>
+          <div class="field">
+            <label for="cur-nome">Nome completo (como deve sair no certificado) *</label>
+            <input id="cur-nome" name="nome" type="text" autocomplete="name" required maxlength="120">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="cur-perfil">Você é *</label>
+              <select id="cur-perfil" name="perfil" required>
+                <option value="">Selecione</option>
+                <option>Fonoaudiólogo(a)</option>
+                <option>Estudante de Fonoaudiologia</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cur-registro">CRFa ou instituição/semestre</label>
+              <input id="cur-registro" name="registro" type="text" maxlength="120">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="cur-telefone">Telefone / WhatsApp *</label>
+              <input id="cur-telefone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="(51) 90000-0000">
+            </div>
+            <div class="field">
+              <label for="cur-email">E-mail *</label>
+              <input id="cur-email" name="email" type="email" autocomplete="email" required>
+            </div>
+          </div>
+          <div class="field field-half">
+            <label for="cur-cidade">Cidade/UF</label>
+            <input id="cur-cidade" name="cidade" type="text" autocomplete="address-level2" maxlength="80">
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend><span class="step-num">2</span> Pagamento</legend>
+          <div class="cupom">
+            <button type="button" class="cupom-abrir" aria-expanded="false">Fez a Mentoria Linguagem Infantil? Tenho um código de ex-aluno</button>
+            <div class="cupom-campo" hidden>
+              <label for="cur-cupom">Código de ex-aluno</label>
+              <div class="cupom-linha">
+                <input id="cur-cupom" name="cupom" type="text" autocomplete="off" autocapitalize="characters" maxlength="60">
+                <button type="button" class="btn btn-small cupom-aplicar">Aplicar</button>
+              </div>
+              <p class="cupom-msg" role="status" hidden></p>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Forma de pagamento *</span>
+            <div class="opcoes-pagamento" role="radiogroup">
+              <label class="opcao"><input type="radio" name="pagamento" value="Pix" required><span><strong>Pix</strong><em class="val-pix">R$ 746,00</em></span></label>
+              <label class="opcao"><input type="radio" name="pagamento" value="Cartão de crédito"><span><strong>Cartão de crédito</strong><em class="val-cartao">até 10x de R$ 93,50 (total R$ 935,00)</em></span></label>
+            </div>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="consentimento" id="cur-consentimento" required>
+            <span>Autorizo o uso dos dados informados para fins de inscrição, comunicação sobre o curso e emissão de certificado, conforme a LGPD. *</span>
+          </label>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        </fieldset>
+
+        <p class="form-error" role="alert" hidden></p>
+        <button type="submit" class="btn btn-light">Concluir inscrição</button>
+      </form>
+
+      <div class="booking-done curso-done" hidden tabindex="-1">
+        <div class="done-icon" aria-hidden="true">✓</div>
+        <h3>Inscrição recebida!</h3>
+        <p class="done-when"></p>
+        <div class="curso-pagar-pix" hidden>
+          <p>Faça o Pix de <strong class="curso-valor"></strong></p>
+          <div class="sup-pix-chave"><span>Chave Pix</span><code></code><button type="button" class="sup-copiar">Copiar</button></div>
+        </div>
+        <div class="curso-pagar-cartao" hidden>
+          <p>Pague <strong class="curso-valor"></strong> pelo link seguro:</p>
+          <a class="btn btn-light curso-link" href="#" target="_blank" rel="noopener">Pagar com cartão</a>
+        </div>
+        <p class="curso-comprovante">Depois de pagar, envie o comprovante. Sua vaga é confirmada após o recebimento.</p>
+        <div class="curso-enviar">
+          <a class="btn btn-whats curso-zap" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+          <a class="btn btn-ghost curso-mail" href="#">Enviar por e-mail</a>
+        </div>
+        <p class="small-light">Enviamos estas informações também para o seu e-mail.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- AGENDAMENTO DE SUPERVISÃO -->
   <section id="supervisao" data-tab class="section section-dark">
     <div class="container booking-layout">
@@ -392,6 +498,55 @@
         <div class="sup-botoes">
           <a href="#supervisao" class="btn btn-light">Agendar supervisão</a>
           <a href="https://wa.me/5551995552044?text=Ol%C3%A1%2C%20Mateus%21%20Tenho%20interesse%20em%20supervis%C3%A3o%20cl%C3%ADnica%20em%20grupo." target="_blank" rel="noopener" class="sup-grupo">Supervisão em grupo? Fale pelo WhatsApp</a>
+        </div>
+      </article>
+
+      <article class="mentoria curso-novo" id="curso-avaliacao-linguagem">
+        <a class="afc-capa" href="assets/curso-avaliacao-linguagem.jpg" target="_blank" rel="noopener">
+          <img class="mentoria-capa" src="assets/curso-avaliacao-linguagem.jpg" alt="Capa do curso Avaliação formal da linguagem oral: dos protocolos ao plano terapêutico, com Mateus Flores. Início em 18 de janeiro de 2027" width="397" height="555" loading="lazy">
+        </a>
+        <div class="mentoria-corpo">
+          <div class="mentoria-tags"><span class="tag tag-gold">Inscrições abertas</span><span class="tag">Turma inaugural · ao vivo e on-line</span></div>
+          <h3>Avaliação formal da linguagem oral <span class="mentoria-sub">dos protocolos ao plano terapêutico</span></h3>
+          <p>Passo a passo de 28 instrumentos formais de avaliação da linguagem oral, da aplicação ao relatório e ao plano terapêutico, para fonoaudiólogos e estudantes de Fonoaudiologia.</p>
+          <ul class="mentoria-numeros">
+            <li><strong>12</strong>encontros quinzenais de 2h30</li>
+            <li><strong>28</strong>instrumentos de avaliação</li>
+            <li><strong>30h</strong>de certificado</li>
+          </ul>
+          <ul class="mentoria-beneficios">
+            <li>Início em 18 de janeiro de 2027</li>
+            <li>Segundas, das 19h às 21h30, ao vivo e on-line</li>
+            <li>Encontros gravados, com acesso por 1 ano</li>
+            <li>Material de apoio e grupo de WhatsApp</li>
+          </ul>
+          <details class="cronograma">
+            <summary>Ver cronograma completo</summary>
+            <ol>
+              <li><time>18/01</time><span>Rastreamento do desenvolvimento: Denver II e IDADI</span></li>
+              <li><time>01/02</time><span>Maturidade simbólica e pragmática: PROC, ABFW Pragmática e POD</span></li>
+              <li><time>15/02</time><span>Compreensão da linguagem e sintaxe: ADL 2 e PCS</span></li>
+              <li><time>01/03</time><span>Vocabulário e processamento: ABFW Vocabulário, TVfusp, TNI, PCL-r e Pseudopalavras</span></li>
+              <li><time>15/03</time><span>Fonologia I: ABFW Fonologia, IAF e TESF</span></li>
+              <li><time>29/03</time><span>Fonologia II e metalinguagem: AFC, Discriminação Fonológica e PCF</span></li>
+              <li><time>12/04</time><span>Fonologia III e fala motora: PAFI e ProADI</span></li>
+              <li><time>26/04</time><span>Fala motora: ProAPV e Praxias Articulatórias e Bucofaciais</span></li>
+              <li><time>10/05</time><span>Fluência I: ABFW Fluência e PROTRAF</span></li>
+              <li><time>24/05</time><span>Fluência II: PROACF, PROCF e SSI-4</span></li>
+              <li><time>07/06</time><span>Bônus – Motricidade orofacial: MMBGR</span></li>
+              <li><time>21/06</time><span>Planejamento terapêutico e documentação</span></li>
+            </ol>
+          </details>
+          <div class="mentoria-cta">
+            <div class="preco">
+              <div><span class="preco-rotulo">No Pix</span><strong>R$ 746,00</strong></div>
+              <div><span class="preco-rotulo">No cartão</span><strong>10x de R$ 93,50</strong><small>total R$ 935,00</small></div>
+            </div>
+            <p class="vagas-aviso">Turma com <strong>25 vagas</strong>.</p>
+            <div class="mentoria-botoes">
+              <a class="btn" href="#inscricao">Fazer minha inscrição</a>
+            </div>
+          </div>
         </div>
       </article>
 
@@ -647,8 +802,9 @@
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z"/></svg>
 </a>
 
-<script src="js/main.js?v=20261118c"></script>
-<script src="js/booking.js?v=20261118c"></script>
-<script src="js/supervisao.js?v=20261118c"></script>
+<script src="js/main.js?v=20261121"></script>
+<script src="js/booking.js?v=20261121"></script>
+<script src="js/supervisao.js?v=20261121"></script>
+<script src="js/curso.js?v=20261121"></script>
 </body>
 </html>
