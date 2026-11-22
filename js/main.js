@@ -43,15 +43,22 @@ if ("IntersectionObserver" in window) {
 const tabs = [...document.querySelectorAll("[data-tab]")];
 const navLinks = [...nav.querySelectorAll("a")];
 function showTab(scroll = true) {
-  const id = location.hash.slice(1);
-  const current = tabs.find((t) => t.id === id) || tabs[0];
+  const id = decodeURIComponent(location.hash.slice(1));
+  // #id pode ser uma aba ou um elemento dentro de uma aba (ex.: um curso)
+  const alvo = id ? document.getElementById(id) : null;
+  const current = tabs.find((t) => t.id === id) || (alvo && alvo.closest("[data-tab]")) || tabs[0];
   tabs.forEach((t) => (t.hidden = t !== current));
   navLinks.forEach((a) => {
     if (a.getAttribute("href") === "#" + current.id) a.setAttribute("aria-current", "page");
     else a.removeAttribute("aria-current");
   });
   document.title = (current.id === "inicio" ? "" : (current.querySelector(".eyebrow")?.textContent + " | ")) + "Mateus Flores | Fonoaudiólogo";
-  if (scroll) window.scrollTo({ top: 0, behavior: "instant" });
+  if (alvo && alvo !== current && !alvo.matches("[data-tab]")) {
+    requestAnimationFrame(() => {
+      alvo.classList.add("visible");
+      window.scrollTo({ top: alvo.getBoundingClientRect().top + window.scrollY - 90, behavior: "instant" });
+    });
+  } else if (scroll) window.scrollTo({ top: 0, behavior: "instant" });
   current.querySelectorAll(".reveal").forEach((el) => el.classList.remove("visible"));
   requestAnimationFrame(() => current.querySelectorAll(".reveal").forEach((el) => io && io.observe(el)));
 }
