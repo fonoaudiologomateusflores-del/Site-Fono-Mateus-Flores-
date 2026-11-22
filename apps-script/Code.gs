@@ -65,7 +65,7 @@ const CONFIG = {
   // CURSO_LINK_EXALUNO, CURSO_CUPOM, CURSO_EXALUNO_PIX, CURSO_EXALUNO_CARTAO.
   CURSO: {
     NOME: 'Avaliação formal da linguagem oral: dos protocolos ao plano terapêutico',
-    VAGAS: 25,
+    VAGAS: 26,
     INSCRICOES_ATE: '2027-01-18',          // último dia de inscrição (inclusive)
     INICIO: '18 de janeiro de 2027',
     GERAL_PIX: 746.00,
